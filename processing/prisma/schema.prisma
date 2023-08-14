@@ -1,0 +1,137 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator typegraphql {
+  provider           = "typegraphql-prisma"
+  output             = "../api/generated/type-graphql"
+  emitTranspiledCode = "false"
+}
+
+model Entry {
+  id                                      Int                 @id @default(autoincrement())
+  createdAt                               DateTime            @default(now())
+  updatedAt                               DateTime            @updatedAt
+  NCTId                                   String              @unique
+  OfficialTitle                           String?
+  BriefTitle                              String
+  OverallStatus                           String
+  BriefSummary                            String
+  DesignInterventionModel                 String?
+  LeadSponsorName                         String?
+  LeadSponsorClass                        String?
+  Gender                                  String?
+  MaximumAge                              Float?
+  MinimumAge                              Float?
+  EnrollmentCount                         Int?
+  EnrollmentType                          String?
+  OrgClass                                String
+  OrgFullName                             String
+  DesignAllocation                        String?
+  DesignInterventionModelDescription      String?
+  DesignMasking                           String?
+  DesignMaskingDescription                String?
+  DesignObservationalModel                String?
+  DesignPrimaryPurpose                    String?
+  DesignTimePerspective                   String?
+  DetailedDescription                     String?
+  StartDate                               String?
+  PrimaryCompletionDate                   String?
+  CompletionDate                          String?
+  StudyFirstPostDate                      String?
+  ResultsFirstPostDate                    String?
+  LastUpdatePostDate                      String?
+  PointOfContactOrganization              String?
+  ResponsiblePartyInvestigatorAffiliation String?
+  ResponsiblePartyInvestigatorFullName    String?
+  ResponsiblePartyInvestigatorTitle       String?
+  ResponsiblePartyOldNameTitle            String?
+  ResponsiblePartyOldOrganization         String?
+  ResponsiblePartyType                    String?
+  WhyStopped                              String?
+  StudyType                               String
+  AgeCategories                           String[]
+  Phases                                  String[]
+  locations                               LocationOnEntries[]
+  conditionMeshTerms ConditionMeshTermOnEntries[]
+  interventionMeshTerms InterventionMeshTermOnEntries[]
+  conditions String[]
+  ReferenceCitation String[]
+
+  drug_name String?
+  
+  // Legacy Fields
+  drug_role String?
+  legacy_search_term String?
+  usecase String?
+  repurpose Boolean? @default(false)
+  legacy_import_date DateTime?
+  notes String?
+  publicationStatus PublicationStatus @default(UNKNOWN)
+  publicationUrl String?
+}
+
+enum PublicationStatus {
+  UNKNOWN
+  PUBLISHED
+  CT_RESULTS
+  NO_PUBLICATION_FOUND
+}
+
+model ConditionMeshTermOnEntries{
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  meshId Int
+  entryId Int
+  mesh MeshTerm @relation(fields: [meshId], references: [id])
+  entry Entry @relation(fields: [entryId], references: [id])
+}
+
+model InterventionMeshTermOnEntries{
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  meshId Int
+  entryId Int
+  mesh MeshTerm @relation(fields: [meshId], references: [id])
+  entry Entry @relation(fields: [entryId], references: [id])
+  description String?
+}
+
+model MeshTerm {
+  id        Int                 @id @default(autoincrement())
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  term String
+  entriesUsedInAsCondition ConditionMeshTermOnEntries[]
+  entriesUsedInAsIntervention InterventionMeshTermOnEntries[]
+}
+
+model Location {
+  id        Int                 @id @default(autoincrement())
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  city      String
+  country   String
+  facility  String?
+  entries   LocationOnEntries[]
+}
+
+model LocationOnEntries {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  location   Location @relation(fields: [locationId], references: [id])
+  locationId Int
+  entry      Entry    @relation(fields: [entryId], references: [id])
+  entryId    Int
+}

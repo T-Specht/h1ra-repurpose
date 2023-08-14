@@ -1,0 +1,134 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator trpc {
+    provider        = "prisma-trpc-generator"
+    withZod         = true
+    withMiddleware  = false
+    withShield      = false
+    contextPath     = "~/server/api/trpc"
+    trpcOptionsPath = "~/server/api/trpc"
+}
+
+model ConditionMeshTermOnEntries {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    meshId    Int
+    entryId   Int
+    Entry     Entry    @relation(fields: [entryId], references: [id])
+    MeshTerm  MeshTerm @relation(fields: [meshId], references: [id])
+}
+
+model Entry {
+    id                                      Int                             @id @default(autoincrement())
+    createdAt                               DateTime                        @default(now())
+    updatedAt                               DateTime                        @updatedAt
+    NCTId                                   String                          @unique
+    OfficialTitle                           String?
+    BriefTitle                              String
+    OverallStatus                           String
+    BriefSummary                            String
+    DesignInterventionModel                 String?
+    LeadSponsorName                         String?
+    LeadSponsorClass                        String?
+    Gender                                  String?
+    MaximumAge                              Float?
+    MinimumAge                              Float?
+    EnrollmentCount                         Int?
+    EnrollmentType                          String?
+    OrgClass                                String
+    OrgFullName                             String
+    DesignAllocation                        String?
+    DesignInterventionModelDescription      String?
+    DesignMasking                           String?
+    DesignMaskingDescription                String?
+    DesignObservationalModel                String?
+    DesignPrimaryPurpose                    String?
+    DesignTimePerspective                   String?
+    DetailedDescription                     String?
+    StartDate                               String?
+    PrimaryCompletionDate                   String?
+    CompletionDate                          String?
+    StudyFirstPostDate                      String?
+    ResultsFirstPostDate                    String?
+    LastUpdatePostDate                      String?
+    PointOfContactOrganization              String?
+    ResponsiblePartyInvestigatorAffiliation String?
+    ResponsiblePartyInvestigatorFullName    String?
+    ResponsiblePartyInvestigatorTitle       String?
+    ResponsiblePartyOldNameTitle            String?
+    ResponsiblePartyOldOrganization         String?
+    ResponsiblePartyType                    String?
+    WhyStopped                              String?
+    StudyType                               String
+    AgeCategories                           String[]
+    Phases                                  String[]
+    conditions                              String[]
+    drug_role                               String?
+    legacy_search_term                      String?
+    notes                                   String?
+    repurpose                               Boolean?                        @default(false)
+    usecase                                 String?
+    legacy_import_date                      DateTime?
+    ReferenceCitation                       String[]
+    publicationStatus                       PublicationStatus               @default(UNKNOWN)
+    publicationUrl                          String?
+    drug_name                               String?
+    ConditionMeshTermOnEntries              ConditionMeshTermOnEntries[]
+    InterventionMeshTermOnEntries           InterventionMeshTermOnEntries[]
+    LocationOnEntries                       LocationOnEntries[]
+}
+
+model InterventionMeshTermOnEntries {
+    id          Int      @id @default(autoincrement())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    meshId      Int
+    entryId     Int
+    description String?
+    Entry       Entry    @relation(fields: [entryId], references: [id])
+    MeshTerm    MeshTerm @relation(fields: [meshId], references: [id])
+}
+
+model Location {
+    id                Int                 @id @default(autoincrement())
+    createdAt         DateTime            @default(now())
+    updatedAt         DateTime  @updatedAt
+    city              String
+    country           String
+    facility          String?
+    LocationOnEntries LocationOnEntries[]
+}
+
+model LocationOnEntries {
+    id         Int      @id @default(autoincrement())
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    locationId Int
+    entryId    Int
+    Entry      Entry    @relation(fields: [entryId], references: [id])
+    Location   Location @relation(fields: [locationId], references: [id])
+}
+
+model MeshTerm {
+    id                            Int                             @id @default(autoincrement())
+    createdAt                     DateTime                        @default(now())
+    updatedAt                     DateTime                        @updatedAt
+    term                          String
+    ConditionMeshTermOnEntries    ConditionMeshTermOnEntries[]
+    InterventionMeshTermOnEntries InterventionMeshTermOnEntries[]
+}
+
+enum PublicationStatus {
+    UNKNOWN
+    PUBLISHED
+    CT_RESULTS
+    NO_PUBLICATION_FOUND
+}
