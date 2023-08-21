@@ -102,20 +102,20 @@ const Layout = (props: LayoutProps) => {
               <MediaQuery smallerThan={BREAKPOINT} styles={HIDE_STYLES}>
                 <Group>
                   <MenuLinks></MenuLinks>
-                  <ActionIcon
-                    variant="outline"
-                    color={dark ? "yellow" : "blue"}
-                    onClick={() => toggleColorScheme()}
-                    title="Toggle color scheme"
-                  >
-                    {dark ? (
-                      <IconSun size="1.1rem" />
-                    ) : (
-                      <IconMoonStars size="1.1rem" />
-                    )}
-                  </ActionIcon>
                 </Group>
               </MediaQuery>
+              <ActionIcon
+                variant="outline"
+                color={dark ? "yellow" : "blue"}
+                onClick={() => toggleColorScheme()}
+                title="Toggle color scheme"
+              >
+                {dark ? (
+                  <IconSun size="1.1rem" />
+                ) : (
+                  <IconMoonStars size="1.1rem" />
+                )}
+              </ActionIcon>
             </Group>
           </div>
         </Header>

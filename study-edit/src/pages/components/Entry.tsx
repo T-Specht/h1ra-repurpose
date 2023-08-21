@@ -18,6 +18,7 @@ dayjs.extend(relativeTime);
 
 import { api, type RouterOutputs } from "~/utils/api";
 import FlexInputGroup from "./ui/FlexInputGroup";
+import { PublicationStatus } from "@prisma/client";
 
 type EntryType = RouterOutputs["generated"]["entry"]["findManyEntry"][0];
 
@@ -39,6 +40,7 @@ export default function Entry(props: {
       usecase: e.usecase || "",
       notes: e.notes || "",
       publicationUrl: e.publicationUrl || "",
+      publicationStatus: e.publicationStatus || "",
     },
   });
 
@@ -188,7 +190,7 @@ export default function Entry(props: {
         <Select
           {...form.getInputProps("publicationStatus")}
           label="PublicationStatus"
-          data={getUnique("publicationStatus")}
+          data={Object.values(PublicationStatus)}
         ></Select>
 
         <TextInput

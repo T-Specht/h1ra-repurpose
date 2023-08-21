@@ -1,7 +1,12 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 
-import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
+import {
+  PanelGroup,
+  Panel,
+  PanelResizeHandle,
+  ImperativePanelHandle,
+} from "react-resizable-panels";
 
 import "react-reflex/styles.css";
 
@@ -11,13 +16,15 @@ import Layout, { HEADER_HEIGHT } from "./components/Layout";
 import {
   Button,
   CloseButton,
+  MediaQuery,
   NumberInput,
   Select,
   TextInput,
   useMantineColorScheme,
 } from "@mantine/core";
-import { useHotkeys, useLocalStorage } from "@mantine/hooks";
+import { useHotkeys, useLocalStorage, useMediaQuery } from "@mantine/hooks";
 import { IconArrowsMoveHorizontal } from "@tabler/icons-react";
+import { ElementRef, useEffect, useRef } from "react";
 
 const jumpPointOptions = [
   "",
@@ -90,6 +97,19 @@ const InnerCompontent = ({ ...props }: { entries: Entry[] }) => {
     ["shift+ArrowLeft", prev],
   ]);
 
+  const mediaMatch = useMediaQuery("(max-width: 500px)");
+  const panelRef = useRef<ImperativePanelHandle>(null);
+
+  useEffect(() => {
+    if (mediaMatch && panelRef) {
+      panelRef.current?.collapse();
+    }
+
+    if (!mediaMatch && panelRef) {
+      panelRef.current?.expand();
+    }
+  }, [mediaMatch]);
+
   return (
     <div
       className=""
@@ -101,7 +121,7 @@ const InnerCompontent = ({ ...props }: { entries: Entry[] }) => {
         <Panel>
           <div className="h-full overflow-y-scroll px-4 pb-10">
             <div>
-              <div className="my-3 flex items-end justify-between flex-wrap">
+              <div className="my-3 flex flex-wrap items-end justify-between">
                 <Button onClick={prev} disabled={currentIndex == 0} size="xs">
                   Previous
                 </Button>
@@ -159,7 +179,7 @@ const InnerCompontent = ({ ...props }: { entries: Entry[] }) => {
                   size="xs"
                   disabled={currentIndex == entries.length - 1}
                 >
-                   Next
+                  Next
                 </Button>
               </div>
             </div>
@@ -176,10 +196,9 @@ const InnerCompontent = ({ ...props }: { entries: Entry[] }) => {
             )}
           </div>
         </Panel>
-        <PanelResizeHandle
-          className={`w-1 bg-slate-400`}
-        ></PanelResizeHandle>
-        <Panel>
+
+        <PanelResizeHandle className={`w-1 bg-slate-400`}></PanelResizeHandle>
+        <Panel collapsible ref={panelRef}>
           <div className="h-full">
             {current && (
               <iframe
