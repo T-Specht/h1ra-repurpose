@@ -24,4 +24,4 @@ study-edit/prisma/generated
 
 legacy_data
 data
-url.env
+.env

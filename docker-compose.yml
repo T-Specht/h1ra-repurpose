@@ -47,7 +47,7 @@ services:
     image: caddy
     restart: unless-stopped
     env_file:
-      - url.env
+      - .env
     networks:
       - default
       - web
@@ -97,12 +97,11 @@ services:
     # environment:
     #   - INIT_ASSETS=1 # default
   config:
-    tty: true
     build:
       context: ./config/
       dockerfile: Dockerfile
     env_file:
-      - url.env
+      - .env
     volumes:
       - ./config/dashboard_config.yml:/home/dashboard_config.yml
       - ./data/config/:/home/done/

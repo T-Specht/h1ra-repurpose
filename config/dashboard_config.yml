@@ -46,7 +46,7 @@ message:
   style: "is-dark" # See https://bulma.io/documentation/components/message/#colors for styling options.
   title: "Information"
   icon: "fa fa-info"
-  content: "Database login information: user:postgres, password:example, host:db, database:postgres"
+  content: "Database connection string: ${DATABASE_URL}"
 
 # Optional navbar
 # links: [] # Allows for navbar (dark mode, layout, and search) without any links
