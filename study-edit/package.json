@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "build": "next build",
+    "docker-start": "concurrently npm:dev npm:studio",
     "dev": "next dev",
     "postinstall": "yarn prisma-generate",
     "lint": "next lint",
     "start": "next start",
+    "studio": "prisma studio",
     "prisma-generate": "prisma generate && yarn prisma:postgenerate",
     "prisma:postgenerate": "rm -f prisma/generated/routers/helpers/createRouter.ts && cp prisma/createRouter.ts prisma/generated/routers/helpers"
   },
@@ -49,6 +51,7 @@
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
     "autoprefixer": "^10.4.7",
+    "concurrently": "^8.2.1",
     "eslint": "^8.34.0",
     "eslint-config-next": "^13.2.1",
     "postcss": "^8.4.14",

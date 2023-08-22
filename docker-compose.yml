@@ -1,0 +1,89 @@
+version: '3.3'
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+  study-edit:
+    command: yarn docker-start
+    restart: unless-stopped
+    tty: true
+    build:
+      context: ./study-edit/
+      dockerfile: Dockerfile
+      args:
+        - DATABASE_URL=${DATABASE_URL}
+    working_dir: /usr/src/app
+    # ports:
+    #   - "3000:3000"
+    #   - "5555:5555"
+    image: study-edit
+    env_file:
+      - .env
+    depends_on:
+      - db
+  adminer:
+    image: adminer
+    restart: always
+    depends_on:
+      - db
+    # ports:
+    #    - 8080:8080
+  jupyter:
+    image: jupyter/datascience-notebook
+    command: "start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''"
+    env_file:
+      - .env
+    # ports:
+    #    - "10000:8888"
+    volumes:
+      - ./analysis:/home/jovyan/anaylsis/
+  caddy:
+    image: caddy
+    restart: unless-stopped
+    environment:
+      - SITE_ADDRESS=localhost
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./data/caddy/site:/srv
+      - ./data/caddy/caddy_data:/data
+      - ./data/caddy/caddy_config:/config
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    env_file:
+      - .env
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - DOCKER_MODS=linuxserver/mods:code-server-nodejs|linuxserver/mods:code-server-zsh
+      - DEFAULT_WORKSPACE=/home/processing/ #optional
+      #- PASSWORD=password #optional
+      #- HASHED_PASSWORD= #optional
+      #- SUDO_PASSWORD=password #optional
+      #- SUDO_PASSWORD_HASH= #optional
+      #- PROXY_DOMAIN=code-server.my.domain #optional
+
+    volumes:
+      - ./data/code/config:/config
+      - ./processing:/home/processing
+    # ports:
+    #    - 8443:8443
+    restart: unless-stopped
+  dashboard:
+    image: b4bz/homer
+    volumes:
+      # - ./data/dashboard/:/www/assets
+      - ./dashboard_config.yml:/www/assets/config.yml
+    # ports:
+    #   - 8080:8080
+    user: 0:0 # default
+    # environment:
+    #   - INIT_ASSETS=1 # default

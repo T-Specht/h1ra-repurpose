@@ -1,0 +1,27 @@
+{
+	auto_https off
+}
+
+http://{$SITE_ADDRESS} {
+	reverse_proxy http://dashboard:8080
+}
+
+http://adminer.{$SITE_ADDRESS} {
+	reverse_proxy http://adminer:8080
+}
+
+http://study-edit.{$SITE_ADDRESS} {
+	reverse_proxy http://study-edit:3000
+}
+
+http://prisma-studio.{$SITE_ADDRESS} {
+	reverse_proxy http://study-edit:5555
+}
+
+http://jupyter.{$SITE_ADDRESS} {
+	reverse_proxy http://jupyter:8888
+}
+http://vscode.{$SITE_ADDRESS} {
+	reverse_proxy http://code-server:8443
+}
+

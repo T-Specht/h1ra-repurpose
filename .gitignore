@@ -8,6 +8,7 @@ analysis/export/
 analysis/pvt/*
 analysis/**/*.pdf
 analysis/prism.pzfx
+analysis/.ipynb_checkpoints
 
 processing/backups/*
 processing/api/generated
@@ -18,3 +19,7 @@ processing/legacy_data.json
 
 study-edit/proxy_cached_content/*
 study-edit/prisma/generated
+
+
+legacy_data
+data
