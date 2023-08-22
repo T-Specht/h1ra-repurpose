@@ -83,7 +83,7 @@ export let fields = [
 ];
 
 const params = {
-  expr: "Cetirizine OR Levocetirizine OR Fexofenadine OR Loratadine OR Desloratadine",
+  expr: "<expr here>",
   min_rnk: 1,
   max_rnk: 1000,
   fmt: "json",

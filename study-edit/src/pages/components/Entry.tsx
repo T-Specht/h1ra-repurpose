@@ -178,9 +178,8 @@ export default function Entry(props: {
           data={getUnique("usecase")}
         ></Autocomplete>
 
-        <Select
+        <Autocomplete
           label="Drug role"
-          searchable
           {...form.getInputProps("drug_role")}
           data={getUnique("drug_role")}
         />

@@ -21,6 +21,8 @@ services:
     #   - "3000:3000"
     #   - "5555:5555"
     image: study-edit
+    volumes:
+      - ./study-edit/src/:/usr/src/app/src/
     env_file:
       - .env
     depends_on:
@@ -44,12 +46,15 @@ services:
   caddy:
     image: caddy
     restart: unless-stopped
-    environment:
-      - SITE_ADDRESS=localhost
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
+    env_file:
+      - caddy.env
+    networks:
+      - default
+      - web
+    # ports:
+    #   - "80:80"
+    #   - "443:443"
+    #   - "443:443/udp"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./data/caddy/site:/srv
@@ -64,10 +69,11 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
       - DOCKER_MODS=linuxserver/mods:code-server-nodejs|linuxserver/mods:code-server-zsh
+      - NODEJS_MOD_VERSION=18
       - DEFAULT_WORKSPACE=/home/processing/ #optional
       #- PASSWORD=password #optional
       #- HASHED_PASSWORD= #optional
-      #- SUDO_PASSWORD=password #optional
+      - SUDO_PASSWORD=sudo #optional
       #- SUDO_PASSWORD_HASH= #optional
       #- PROXY_DOMAIN=code-server.my.domain #optional
 
@@ -87,3 +93,6 @@ services:
     user: 0:0 # default
     # environment:
     #   - INIT_ASSETS=1 # default
+networks:
+  web:
+    external: true

@@ -22,7 +22,7 @@ readline.question(`Do you really want to delete the whole database? If so, pleas
     if(input.trim() == keyphrase){
         
         console.log("Alright, deleting data...")
-        createBackup();
+        //createBackup();
         await prisma.$executeRawUnsafe(`TRUNCATE "ConditionMeshTermOnEntries", "Entry", "InterventionMeshTermOnEntries", "LocationOnEntries", "Location", "MeshTerm" RESTART IDENTITY`);
         console.log("!!! Data has been deleted !!!")
     }else{

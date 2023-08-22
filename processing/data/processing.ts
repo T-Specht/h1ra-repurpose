@@ -236,7 +236,7 @@ for (let d of data) {
   downloadedFields.forEach((k) => {
     if (![...arrayKeys, ...singleLengthKeys].includes(k as any)) {
       console.warn(`Downloaded key "${k}" is missing in processing keys.`);
-      process.exit();
+      //process.exit();
     }
   });
 
@@ -355,7 +355,7 @@ interface PDataEntryWithArrays extends PDataEntry {
 
 let finalEntries: PDataEntryWithArrays[] = [];
 
-const legacyData: ILegacyData[] = require("../legacy_data.json");
+const legacyData: ILegacyData[] = [];
 
 
 // Loop over all the collected and processed entries (at least processed for single values)
@@ -417,7 +417,7 @@ entries.forEach((e, i) => {
     mergeLegacyData(legacyDataFilter[0]);
   } else if (legacyDataFilter.length == 0) {
     // Not found
-    console.warn(`Found no legacy data for ${e.NCTId}`);
+    //console.warn(`Found no legacy data for ${e.NCTId}`);
   } else {
     // Found too many
     console.warn(`Found multiple legacy nodes for ${e.NCTId}`);

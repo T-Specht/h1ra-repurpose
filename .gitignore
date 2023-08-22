@@ -3,6 +3,7 @@ node_modules
 .DS_Store
 .env
 update_git.sh
+.vscode
 
 analysis/export/
 analysis/pvt/*
@@ -17,9 +18,10 @@ processing/api_results*.json
 processing/data_dump.sql
 processing/legacy_data.json
 
-study-edit/proxy_cached_content/*
+study-edit/proxy_cached_content/html/
 study-edit/prisma/generated
 
 
 legacy_data
 data
+caddy.env

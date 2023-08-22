@@ -1,0 +1,520 @@
+@charset "UTF-8";
+
+/* CSS for Trial Record Detail */
+
+/* CSS class prefix "tr-" */
+
+/* DEADWOOD TRAP */
+.body3,
+.body2,
+h1.solo_record,
+.header1,
+.header2,
+.header3,
+.floater-50,
+#trial-info-1,
+#trial-info-2,
+.identifier,
+.bold_participant_color,
+.pale_participant_color,
+.note_participant_color,
+.bold_baseline_color,
+.pale_baseline_color,
+.note_baseline_color,
+.bold_outcome_color,
+.pale_outcome_color,
+.note_outcome_color,
+.bold_events_color,
+.pale_events_color,
+.note_events_color,
+.bold_more_info_color,
+.pale_more_info_color,
+.note_more_info_color,
+table.results_table,
+.br,
+.brt,
+table.data_table,
+table.data_table td, table.data_table th,
+table.data_table td, table.data_table th
+.banner_color,
+.pale_banner_color,
+.tableStyle,
+.sectionBanner,
+.rowHeader,
+.rowBody,
+.column,
+.left,
+.right,
+pbtn,
+.dropdown,
+.dropdown-content,
+.dropdown-content a,
+.dropdown-content a:hover,
+.dropdown:hover .dropdown-content,
+.dropdown:hover .dropbtn,
+.subsection,
+.underline
+{
+    color: red !important;
+    font-style: italic !important;
+    border-color: red !important;
+}
+/* END DEADWOOD TRAP */
+
+/* Used by keydates */
+#body-copy
+{
+    margin-left: 0px;
+    width: 96%;
+    border: 1px solid #dadada;
+    padding: 18px;
+    margin-top: 12px;
+}
+
+/* No :focus highlighting */
+#main-content:focus
+{
+	outline-width: 0;
+}
+
+/* override base.css for h1 also
+ * add class "ct-sans-serif" to get our desired styling
+ */
+h1.tr-h1 {
+    color: #000;
+    font-size: 18px;
+    font-weight: bold;
+    border-bottom: 1px solid #dadada;
+    padding-bottom: 12px;
+    max-width: 1200px;
+    margin: auto;
+    margin-bottom: 1ex;
+}
+
+h1.tr-solo_record {
+    margin-top: 30px;
+}
+
+.tr-info-text {
+    margin-bottom: 0;
+    font-size: 14px;
+    margin-left: 50px;
+}
+
+.tr-info-title {
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 12px;
+    margin-left: 30px;
+}
+
+/* Ordered Lists within ordered lists start with lowercase alpha characters*/
+ol ol {
+    list-style-type: lower-alpha;
+}
+
+#sponsor {
+    font-size: 14px;
+}
+
+/* ---------------------------------
+ * Overrides for base.css
+ */
+/* base.css has what we want
+ul#tab-links li.current {
+    border-bottom: 5px solid white;
+    background-color: white;
+}
+*/
+
+/* want the current tab and tab body backgrounds to match */
+ul#tab-links li.current:hover {
+    background-color: white;
+}
+
+#tab-body {
+	background-color: white;
+	padding-top: 1em;
+	overflow-x: auto;
+}
+
+
+/* RESULTS NAVIGATION */
+
+/* Recruitement status */
+.tr-status {
+    font-size: 14px;
+    /* color: green; */
+    /* font-weight: bold; */
+    padding: 15px 15px 15px 15px;
+}
+
+.tr-recruiting-colors {
+    background-color: #e7f4e4;
+    border: 5px green;
+    border-style: solid none none none;
+}
+
+.tr-not-recruiting-colors {
+    background-color: #f9dede;
+    border: 5px red;
+    border-style: solid none none none;
+}
+
+.tr-unknown-recruiting-colors {
+    background-color: #fff1d2;
+    border: 5px brown;
+    border-style: solid none none none;
+}
+/* End Recuritement status */
+
+.tr-status-details {
+    font-size: 14px;
+    font-weight: normal;
+    margin-bottom: 9px;
+}
+
+.tr-missing_color { 
+    background-color:#ffeee4;  
+    font-style: italic;
+    color: #969696;
+}
+
+div.tr-results-summary
+{
+    padding: 3px;
+    font-size:large;
+    text-align:center;  
+}
+
+div.tr-results-nav {
+    padding: 3px;
+	  margin-top: 10px;
+}
+
+div.tr-search-results {
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+a.tr-study-link
+{
+    border-bottom: 1px dotted;
+} 
+
+a.tr-prev-link
+{
+    padding-left: 12px;
+    margin-right: 12px;
+    background:url(../images/arrow-left.jpg) no-repeat center left;
+}
+
+a.tr-next-link
+{
+    padding-right: 12px;
+    margin-left: 12px;
+    background:url(../images/arrow-right.jpg) no-repeat center right;
+}
+
+a.tr-return-link
+{
+    margin-left: 12px;
+    margin-right: 12px;
+}
+                     
+/* STYLING FOR EXISTING RECORD DATA */
+
+div.tr-indent1
+{
+    clear: both;
+}
+
+.tr-indent2 {
+    clear: both;
+    margin-left: 1em;
+}
+
+.tr-indent3 {
+    clear: both;
+}
+
+span.tr-li-content {
+    color: #000;
+}
+
+span.tr-content p {
+	display:inline;
+}
+
+span.tr-content ol {
+	list-style-type: lower-alpha
+}
+
+
+/**** CT-OVERRIDES ******/
+.ct-body3 {
+  font-size:14px;
+}
+
+
+
+/* ----------------------------------------------
+ * Results table colors
+ * Many of these are not used here, but are
+ * included for completeness
+ */
+.tr_bold_participant_color { background-color:#ddffdd; }
+.tr-pale_participant_color { background-color:#f3fff3; }
+.tr-note_participant_color { color:#339900; }
+
+.tr-bold_baseline_color { background-color:#d7eaff; }
+.tr-pale_baseline_color { background-color:#f3f9ff; }
+.tr-note_baseline_color { color:#0033cc; }
+
+.tr-bold_outcome_color { background-color:#ddddff; }
+.tr-pale_outcome_color { background-color:#f5f5ff; }
+.tr-note_outcome_color { color:#000077; }
+
+.tr-bold_events_color { background-color:#e4dcf7; }
+.tr-pale_events_color { background-color:#f8f3fd; }
+.tr-note_events_color { color:#550077; }
+
+.tr-bold_more_info_color { background-color:#dddddd; }
+.tr-pale_more_info_color { background-color:#f7f7f7; }
+.tr-note_more_info_color { color:#000000; }
+
+/* So tables don't extend past window edge */
+div.tr-table_cover {
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+}
+
+div.tr-table_cover > table.ct-layout_table td {
+    padding: 1ex 1em 0px 0px;
+    white-space:nowrap;
+}
+
+/* ----------------------------------------------
+ * Data table borders 
+ */
+
+table.tr-data_table {
+    background-color: white;
+    border-collapse:collapse;
+    border: 1px solid #ccc;
+}
+
+table.tr-data_table td, table.tr-data_table th {
+    border: 1px solid #ccc;
+    padding: 6px 9px;
+}
+
+.tr-banner_color { background-color:#dde2ff; }
+
+th.tr-pale_banner_color {
+    background-color: #edeeff;
+}
+
+/* Styles for Tabular View and Study Details View*/
+.tr-tableStyle {
+    width: 100%;
+    padding: 8px;
+    overflow-x: scroll;
+}
+
+.tr-tableStyle tr {
+    vertical-align: top;
+}
+
+.tr-sectionBanner {
+    height: 3ex;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.tr-tableStyle tr td:first-child {
+	  white-space: nowrap;
+	  width: 20%;
+}
+
+.tr-studyInfo tr td:first-child, .tr-studyInfo tr th:first-child {
+    text-align: right;
+}
+
+.tr-moreInfo tr td:first-child {
+    text-align: left;
+}
+
+.tr-tableLabel {
+    margin-top: 3ex;
+}
+
+.tr-noResults {
+    margin: 4ex;
+}
+
+/* ----------------------------------------------
+ * Layout overrides for small displays to make maximal use of space 
+ * use vertical arrangement for small displays in Tabular View
+ */
+@media (max-width:601px) {
+    .tr-tableStyle td, .tr-tableStyle th, .tr-meshTerms td {
+        display: block;
+        width: 100%;
+        text-align: left;
+    }
+    
+    .tr-tableStyle tr td:first-child {
+        margin-top: 1ex;
+        font-weight: bold;
+        width: 100%;
+    }
+    
+		.tr-studyInfo tr td:first-child, .tr-studyInfo tr th:first-child {
+		    text-align: left;
+		}
+		
+    .tr-tableLabel {
+        font-weight: bold;
+    }
+    
+    .tr-tableLabel td {
+        padding-left: 1em;
+    }
+    
+    .tr-tableStyle tr {
+        margin-top: 1ex;
+    }
+    
+    .tr-sectionBanner {
+        height: inherit;
+    }
+
+		.tr-indent2 {
+		    margin-left: 0;
+		}
+		
+		.ct-indent1 {
+		    margin-left: 0;
+		    margin-right: 0;
+		}
+    
+    h1.tr-h1 {
+      padding-left: 0.5em;
+      padding-right: 0.5em;
+    }
+			
+		/* The study results tables will resize (squish) unless the display is too small */
+		/* then they will scroll */
+		.tr-squishScroll {
+		    overflow: auto;
+		    min-width: 1200px;
+		}
+
+		.tr-noResults {
+		    margin: auto;
+		}
+}
+
+.tr-rowHeader {
+    text-align: right;
+    vertical-align: top;
+    width: 15%;
+}	
+
+.tr-rowBody {
+    text-align: left;
+    vertical-align: top;
+    width: 85%;
+}	
+
+.tr-column {
+    float: left;
+    padding: 5px;
+}
+
+.tr-left {
+    width: 53%;
+}
+
+.tr-right {
+		width: 40%;
+		float: right;
+		margin-right:3em;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.tr-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.tr-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.tr-dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.tr-dropdown-content a:hover {background-color: #f1f1f1}
+
+.tr-dropdown:hover .tr-dropdown-content {
+    display: block;
+}
+
+.tr-dropdown:hover .tr-dropbtn {
+    background-color: #f1f1f1;
+}
+
+.tr-subsection {
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+  display: -ms-flexbox;      /* TWEENER - IE 10 */
+  display: -webkit-flex;     /* NEW - Chrome */
+  display: flex;             /* NEW, Spec - Opera 12.1, Firefox 20+ */
+  border-bottom: 1px solid gray;
+  margin-right: 1em;
+}
+
+.tr-underline {
+  flex: 1;
+  height: 0px;
+  margin: 0 100px 0 10px;
+}
+
+/* styles for locations open/close
+ * should agree with the analagous de- styles in data-entry.css
+ */
+.tr-showAndHide {
+    background: transparent;
+    cursor: pointer;
+}
+
+.tr-showAndHide:hover {
+    background: #F9F0CC;
+}
+
+/* CTGDEV-661: history data on /show/study/ page */
+a.moreinfo_history {
+    margin-left: 1.5rem;
+}
+a.moreinfo_history span {
+	text-decoration:line-through;
+    color: gray;
+}
