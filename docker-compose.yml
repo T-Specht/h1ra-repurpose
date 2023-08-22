@@ -47,14 +47,14 @@ services:
     image: caddy
     restart: unless-stopped
     env_file:
-      - caddy.env
+      - url.env
     networks:
       - default
       - web
-    # ports:
-    #   - "80:80"
-    #   - "443:443"
-    #   - "443:443/udp"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./data/caddy/site:/srv
@@ -87,12 +87,25 @@ services:
     image: b4bz/homer
     volumes:
       # - ./data/dashboard/:/www/assets
-      - ./dashboard_config.yml:/www/assets/config.yml
+      # - ./dashboard_config.yml:/www/assets/config.yml
+      - ./data/config/dashboard_config_env.yml:/www/assets/config.yml
     # ports:
     #   - 8080:8080
     user: 0:0 # default
+    depends_on:
+      - config
     # environment:
     #   - INIT_ASSETS=1 # default
+  config:
+    tty: true
+    build:
+      context: ./config/
+      dockerfile: Dockerfile
+    env_file:
+      - url.env
+    volumes:
+      - ./config/dashboard_config.yml:/home/dashboard_config.yml
+      - ./data/config/:/home/done/
 networks:
   web:
     external: true

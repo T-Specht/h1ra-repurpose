@@ -74,17 +74,17 @@ services:
       - name: "Processing"
         icon: "fa-solid fa-gears"
         subtitle: "Download, process and store data"
-        url: "http://vscode.tramadol.ctgtool.specht.io"
+        url: "http://vscode.${SITE_ADDRESS}"
         target: "_blank" # optional html a tag target attribute
       - name: "Study Edit"
         icon: "fa-solid fa-table-columns"
         subtitle: "Web application to annotate and validate study data"
-        url: "http://study-edit.tramadol.ctgtool.specht.io"
+        url: "http://study-edit.${SITE_ADDRESS}"
         target: "_blank" # optional html a tag target attribute
       - name: "Jupyter Notebook"
         icon: "fa-solid fa-magnifying-glass-chart"
         subtitle: "For data analysis"
-        url: "http://jupyter.tramadol.ctgtool.specht.io"
+        url: "http://jupyter.${SITE_ADDRESS}"
         target: "_blank" # optional html a tag target attribute
   - name: "Helper Applications"
     icon: "fa-solid fa-handshake-angle"
@@ -92,10 +92,10 @@ services:
       - name: "Adminer"
         icon: "fa-solid fa-database"
         subtitle: "Access internal PostgreSQL directly"
-        url: "http://adminer.tramadol.ctgtool.specht.io"
+        url: "http://adminer.${SITE_ADDRESS}"
         target: "_blank" # optional html a tag target attribute
       - name: "Prisma Studio"
         icon: "fa-solid fa-code"
         subtitle: "Access data through prisma ORM layer via its studio"
-        url: "http://prisma-studio.tramadol.ctgtool.specht.io"
+        url: "http://prisma-studio.${SITE_ADDRESS}"
         target: "_blank" # optional html a tag target attribute
