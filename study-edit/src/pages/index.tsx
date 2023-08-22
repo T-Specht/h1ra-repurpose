@@ -202,11 +202,17 @@ const InnerCompontent = ({ ...props }: { entries: Entry[] }) => {
           <div className="h-full">
             {current && (
               <iframe
+                is="x-frame-bypass"
                 style={{
                   filter: dark ? "invert(90%) hue-rotate(180deg)" : "",
                 }}
-                src={`/api/ctg/${current.NCTId}${jumpPoint}`}
-                // src={`http://clinicaltrials.gov/study/${current.NCTId}`}
+                key={`https://classic.clinicaltrials.gov/ct2/show/${current.NCTId}${jumpPoint}`}
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                //src={`/api/ctg/${current.NCTId}${jumpPoint}`}
+                src={`https://classic.clinicaltrials.gov/ct2/show/${current.NCTId}${jumpPoint}`}
+                //src={`https://clinicaltrials.gov/study/${current.NCTId}`}
                 className="h-full w-full border-0 "
               ></iframe>
             )}
