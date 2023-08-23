@@ -2,7 +2,7 @@ import axios from "axios";
 import { writeFileSync } from "fs";
 import _ from "lodash";
 
-const base = "https://clinicaltrials.gov/api/query/study_fields";
+const base = "https://classic.clinicaltrials.gov/api/query/study_fields";
 
 // https://clinicaltrials.gov/api/info/study_fields_list?fmt=json
 
