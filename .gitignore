@@ -6,7 +6,7 @@ update_git.sh
 .vscode
 
 analysis/export/
-analysis/pvt/*
+analysis/pvt/*.csv
 analysis/**/*.pdf
 analysis/prism.pzfx
 analysis/.ipynb_checkpoints
