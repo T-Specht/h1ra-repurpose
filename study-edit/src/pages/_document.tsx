@@ -11,10 +11,7 @@ export default class _Document extends Document {
   render() {
     return (
       <Html>
-        <Head>
-          <script src="https://unpkg.com/@ungap/custom-elements-builtin"></script>
-          <script type="module" src="https://unpkg.com/x-frame-bypass"></script>
-        </Head>
+        <Head></Head>
         <body>
           <Main />
           <NextScript />

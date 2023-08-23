@@ -14,8 +14,6 @@ services:
     build:
       context: ./study-edit/
       dockerfile: Dockerfile
-      args:
-        - DATABASE_URL=${DATABASE_URL}
     working_dir: /usr/src/app
     # ports:
     #   - "3000:3000"
@@ -106,6 +104,13 @@ services:
     volumes:
       - ./config/dashboard_config.yml:/home/dashboard_config.yml
       - ./data/config/:/home/done/
+  ctgproxy:
+    restart: unless-stopped 
+    # ports:
+    #    - 3030:3000
+    build:
+      context: ./ctgproxy/
+      dockerfile: Dockerfile
 networks:
   web:
     external: true

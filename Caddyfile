@@ -24,4 +24,7 @@ http://jupyter.{$SITE_ADDRESS} {
 http://vscode.{$SITE_ADDRESS} {
 	reverse_proxy http://code-server:8443
 }
+http://ctgproxy.{$SITE_ADDRESS} {
+	reverse_proxy http://ctgproxy:3000
+}
 

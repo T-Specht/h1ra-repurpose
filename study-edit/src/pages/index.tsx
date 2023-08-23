@@ -1,4 +1,4 @@
-import { type NextPage } from "next";
+import { GetStaticProps, type NextPage } from "next";
 import Head from "next/head";
 
 import {
@@ -40,7 +40,12 @@ const jumpPointOptions = [
 
 type Entry = RouterOutputs["generated"]["entry"]["findManyEntry"][0];
 
-const InnerCompontent = ({ ...props }: { entries: Entry[] }) => {
+const InnerCompontent = ({
+  ...props
+}: {
+  entries: Entry[];
+  siteAddress: string;
+}) => {
   const [currentIndex, setCurrentIndex] = useLocalStorage({
     key: "currentIndex",
     defaultValue: 0,
@@ -202,16 +207,15 @@ const InnerCompontent = ({ ...props }: { entries: Entry[] }) => {
           <div className="h-full">
             {current && (
               <iframe
-                is="x-frame-bypass"
                 style={{
                   filter: dark ? "invert(90%) hue-rotate(180deg)" : "",
                 }}
-                key={`https://classic.clinicaltrials.gov/ct2/show/${current.NCTId}${jumpPoint}`}
+                //key={`https://classic.clinicaltrials.gov/ct2/show/${current.NCTId}${jumpPoint}`}
                 width="100%"
                 height="100%"
                 frameBorder="0"
                 //src={`/api/ctg/${current.NCTId}${jumpPoint}`}
-                src={`https://classic.clinicaltrials.gov/ct2/show/${current.NCTId}${jumpPoint}`}
+                src={`http://ctgproxy.${props.siteAddress}/ct2/show/${current.NCTId}${jumpPoint}`}
                 //src={`https://clinicaltrials.gov/study/${current.NCTId}`}
                 className="h-full w-full border-0 "
               ></iframe>
@@ -223,7 +227,7 @@ const InnerCompontent = ({ ...props }: { entries: Entry[] }) => {
   );
 };
 
-const Home: NextPage = () => {
+const Home: NextPage<{ siteAddress: string }> = (props) => {
   const _entries = api.generated.entry.findManyEntry.useQuery({
     // where: {
     //   repurpose: true,
@@ -239,9 +243,20 @@ const Home: NextPage = () => {
 
   return (
     <Layout>
-      <InnerCompontent entries={entries}></InnerCompontent>
+      {props.toString()}
+      <InnerCompontent
+        entries={entries}
+        siteAddress={props.siteAddress}
+      ></InnerCompontent>
     </Layout>
   );
+};
+
+export const getStaticProps = () => {
+  //console.log(process.env)
+  return {
+    props: { siteAddress: process.env.SITE_ADDRESS },
+  };
 };
 
 export default Home;

@@ -2,9 +2,6 @@ FROM node:alpine
 #ENV NODE_ENV production
 ENV SKIP_ENV_VALIDATION 1
 
-ARG  DATABASE_URL
-ENV DATABASE_URL $DATABASE_URL
-
 # RUN apk add tzdata
 # ENV TZ="Europe/Berlin"
 
