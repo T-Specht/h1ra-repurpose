@@ -45,6 +45,7 @@ const InnerCompontent = ({
 }: {
   entries: Entry[];
   siteAddress: string;
+  xframeProtocol: string;
 }) => {
   const [currentIndex, setCurrentIndex] = useLocalStorage({
     key: "currentIndex",
@@ -215,7 +216,7 @@ const InnerCompontent = ({
                 height="100%"
                 frameBorder="0"
                 //src={`/api/ctg/${current.NCTId}${jumpPoint}`}
-                src={`http://ctgproxy.${props.siteAddress}/ct2/show/${current.NCTId}${jumpPoint}`}
+                src={`${props.xframeProtocol}://ctgproxy.${props.siteAddress}/ct2/show/${current.NCTId}${jumpPoint}`}
                 //src={`https://clinicaltrials.gov/study/${current.NCTId}`}
                 className="h-full w-full border-0 "
               ></iframe>
@@ -227,7 +228,9 @@ const InnerCompontent = ({
   );
 };
 
-const Home: NextPage<{ siteAddress: string }> = (props) => {
+const Home: NextPage<{ siteAddress: string; xframeProtocol: string }> = (
+  props
+) => {
   const _entries = api.generated.entry.findManyEntry.useQuery({
     // where: {
     //   repurpose: true,
@@ -245,6 +248,7 @@ const Home: NextPage<{ siteAddress: string }> = (props) => {
     <Layout>
       <InnerCompontent
         entries={entries}
+        xframeProtocol={props.xframeProtocol}
         siteAddress={props.siteAddress}
       ></InnerCompontent>
     </Layout>
@@ -254,7 +258,10 @@ const Home: NextPage<{ siteAddress: string }> = (props) => {
 export const getStaticProps = () => {
   //console.log(process.env)
   return {
-    props: { siteAddress: process.env.SITE_ADDRESS },
+    props: {
+      siteAddress: process.env.SITE_ADDRESS,
+      xframeProtocol: process.env.XFRAME_PROTOCOL || "http",
+    },
   };
 };
 
