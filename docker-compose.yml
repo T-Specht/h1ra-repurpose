@@ -105,7 +105,9 @@ services:
       - ./config/dashboard_config.yml:/home/dashboard_config.yml
       - ./data/config/:/home/done/
   ctgproxy:
-    restart: unless-stopped 
+    restart: unless-stopped
+    env_file:
+      - .env
     # ports:
     #    - 3030:3000
     build:

@@ -243,7 +243,6 @@ const Home: NextPage<{ siteAddress: string }> = (props) => {
 
   return (
     <Layout>
-      {props.toString()}
       <InnerCompontent
         entries={entries}
         siteAddress={props.siteAddress}
