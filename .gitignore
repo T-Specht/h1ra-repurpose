@@ -11,7 +11,7 @@ analysis/**/*.pdf
 analysis/prism.pzfx
 analysis/.ipynb_checkpoints
 
-processing/backups/*
+processing/backups/*.sql
 processing/api/generated
 processing/prisma/migrations/
 processing/api_results*.json
