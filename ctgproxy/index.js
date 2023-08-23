@@ -9,8 +9,8 @@ app.use(
     contentSecurityPolicy: {
       useDefaults: false,
       directives: {
-        defaultSrc: ["'self'"],
-        frameAncestors: ["*." + process.env.SITE_ADDRESS]
+        defaultSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        frameAncestors: ["*." + process.env.SITE_ADDRESS],
       },
     },
   })
