@@ -6,7 +6,7 @@ BACKUP_FILE=$1
 
 echo "Stopping db and removing old data"
 docker compose stop db
-rm -rf data/postgres
+sudo rm -rf data/postgres
 docker compose up db -d
 
 echo "waiting, so db is up"
