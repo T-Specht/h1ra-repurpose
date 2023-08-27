@@ -10,11 +10,9 @@ USE_GZIP=${1:-true}
 # Path is either second arg or default value
 BACKUP_PATH=${2:-$DEFAULT_PATH}
 
-echo $BACKUP_PATH
-
 if [ -n "$CONTAINER_ID" ]
 then
-    echo "db service is running, creating backup.";
+    echo "db service is running, creating backup at $BACKUP_PATH ; gzip = $USE_GZIP";
     mkdir -p "$(dirname $BACKUP_PATH)"
 
     if [ $USE_GZIP = true ]

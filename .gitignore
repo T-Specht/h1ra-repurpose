@@ -21,7 +21,7 @@ processing/legacy_data.json
 study-edit/proxy_cached_content/html/
 study-edit/prisma/generated
 
-
+db_backups
 legacy_data
 data
 .env
