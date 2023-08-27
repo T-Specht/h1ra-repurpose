@@ -13,4 +13,11 @@ echo "waiting, so db is up"
 sleep 5s
 
 echo "restoring from $BACKUP_FILE";
-cat $BACKUP_FILE | docker compose exec -T db psql -U postgres -d postgres
+
+if [[ $BACKUP_FILE == *.gz ]]
+then
+    echo "detected gzip"
+    cat $BACKUP_FILE | gunzip | docker compose exec -T db psql -U postgres -d postgres
+else
+    cat $BACKUP_FILE | docker compose exec -T db psql -U postgres -d postgres
+fi
