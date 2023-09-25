@@ -235,7 +235,8 @@ for (let d of data) {
 
   downloadedFields.forEach((k) => {
     if (![...arrayKeys, ...singleLengthKeys].includes(k as any)) {
-      console.warn(`Downloaded key "${k}" is missing in processing keys.`);
+      // TODO
+      //console.warn(`Downloaded key "${k}" is missing in processing keys.`);
       //process.exit();
     }
   });
