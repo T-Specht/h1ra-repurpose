@@ -21,6 +21,7 @@ services:
     image: study-edit
     volumes:
       - ./study-edit/src/:/usr/src/app/src/
+      - ./study-edit/prisma/:/usr/src/app/prisma/
     env_file:
       - .env
     depends_on:

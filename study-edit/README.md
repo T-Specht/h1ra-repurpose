@@ -1,3 +1,11 @@
+# Specific information
+
+- To add fields, copy migrations folder from /processing/prisma/migrations
+- Edit schema.prisma
+- yarn prisma migrate dev
+- yarn prisma-generate
+- restart container
+
 # Create T3 App
 
 This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
