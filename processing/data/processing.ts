@@ -522,7 +522,7 @@ const dataPush = async () => {
           legacy_search_term: e.legacy_search_term,
           usecase: e.usecase,
           repurpose: Boolean(e.repurpose),
-          legacy_import_date: new Date(e.legacy_import_date),
+          legacy_import_date: e.legacy_import_date ? new Date(e.legacy_import_date) : null,
           notes: e.notes,
         },
       });

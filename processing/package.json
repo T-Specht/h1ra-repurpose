@@ -21,10 +21,8 @@
   "devDependencies": {
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.11.18",
-    "@types/node-geocoder": "^3.24.5",
     "prisma": "^5.4.2",
     "ts-node": "^10.9.1",
-    "typegraphql-prisma": "^0.23.2",
     "typescript": "^4.9.4"
   }
 }
