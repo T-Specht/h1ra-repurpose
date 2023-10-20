@@ -37,8 +37,7 @@ docker compose up -d
 Install requirements using:
 ```
 yarn install
-yarn prisma generate
-yarn prisma db push
+yarn prisma migrate dev
 ```
 
 - `data/api_download.ts`: downloads the newest study data to a temporary .json automatically named based on the current date
