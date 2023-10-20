@@ -4,22 +4,14 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@prisma/client": "^4.8.0",
-    "@types/graphql-fields": "^1.3.4",
-    "apollo-server": "^3.11.1",
+    "@prisma/client": "^5.4.2",
     "axios": "^1.2.2",
     "class-validator": "^0.14.0",
     "dotenv": "^16.0.3",
-    "graphql": "^15.3.0",
-    "graphql-fields": "^2.0.3",
-    "graphql-scalars": "^1.20.1",
     "lodash": "^4.17.21",
-    "node-geocoder": "^4.2.0",
-    "nodeplotlib": "^1.1.2",
     "plotly": "^1.0.6",
     "reflect-metadata": "^0.1.13",
-    "tslib": "^2.4.1",
-    "type-graphql": "^1.1.1"
+    "tslib": "^2.4.1"
   },
   "scripts": {
     "api": "ts-node api/index.ts",
@@ -30,7 +22,7 @@
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.11.18",
     "@types/node-geocoder": "^3.24.5",
-    "prisma": "^4.8.0",
+    "prisma": "^5.4.2",
     "ts-node": "^10.9.1",
     "typegraphql-prisma": "^0.23.2",
     "typescript": "^4.9.4"

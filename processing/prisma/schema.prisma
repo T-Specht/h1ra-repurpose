@@ -10,11 +10,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-generator typegraphql {
-  provider           = "typegraphql-prisma"
-  output             = "../api/generated/type-graphql"
-  emitTranspiledCode = "false"
-}
+// generator typegraphql {
+//   provider           = "typegraphql-prisma"
+//   output             = "../api/generated/type-graphql"
+//   emitTranspiledCode = "false"
+// }
 
 model Entry {
   id                                      Int                 @id @default(autoincrement())
