@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "docker-start": "concurrently npm:dev npm:studio",
+    "docker-start": "yarn prisma-generate && concurrently npm:dev npm:studio",
     "dev": "next dev",
     "postinstall": "yarn prisma-generate",
     "lint": "next lint",
