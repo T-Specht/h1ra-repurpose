@@ -8,6 +8,9 @@ This version differs from the version used in the original paper (can still be a
 
 ## Instructional video
 
+[[English Video] Basic installation and usage demonstration](https://youtu.be/IGoJE59g190)
+
+
 [[German Video] Basic installation and usage demonstration](https://youtu.be/_msVKMROs80)
 
 We are working on an English version of the video above. You may use the automatic subtitles in the meantime.
