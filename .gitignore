@@ -23,5 +23,5 @@ study-edit/prisma/generated
 
 db_backups
 legacy_data
-data
+/data/
 .env
