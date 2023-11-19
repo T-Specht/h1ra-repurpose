@@ -13,7 +13,6 @@ This version differs from the version used in the original paper (can still be a
 
 [[German Video] Basic installation and usage demonstration](https://youtu.be/_msVKMROs80)
 
-We are working on an English version of the video above. You may use the automatic subtitles in the meantime.
 
 ## Prerequisites
 
