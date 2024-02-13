@@ -7,6 +7,7 @@ import {
   Spoiler,
   Textarea,
   TextInput,
+  Tooltip,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { type HotkeyItem, useHotkeys } from "@mantine/hooks";
@@ -19,6 +20,9 @@ dayjs.extend(relativeTime);
 import { api, type RouterOutputs } from "~/utils/api";
 import FlexInputGroup from "./ui/FlexInputGroup";
 import { PublicationStatus } from "@prisma/client";
+import { useEffect, useState } from "react";
+import { IAiFields } from "~/server/api/routers/internal";
+import AIInfo from "./ui/AIInfo";
 
 type EntryType = RouterOutputs["generated"]["entry"]["findManyEntry"][0];
 
@@ -31,6 +35,86 @@ export default function Entry(props: {
   const apiUntil = api.useContext();
 
   const e = props.entry;
+
+  let {
+    BriefTitle,
+    OfficialTitle,
+    DetailedDescription,
+    BriefSummary,
+    AgeCategories,
+    DesignInterventionModel,
+    DesignInterventionModelDescription,
+    conditions,
+    EnrollmentCount,
+    ResponsiblePartyInvestigatorFullName,
+    LeadSponsorName,
+    DesignAllocation,
+    DesignMasking,
+    NCTId,
+  } = e;
+
+  // console.log({
+  //   BriefTitle,
+  //   OfficialTitle,
+  //   DetailedDescription,
+  //   BriefSummary,
+  //   AgeCategories,
+  //   DesignInterventionModel,
+  //   DesignInterventionModelDescription,
+  //   conditions,
+  //   EnrollmentCount,
+  //   ResponsiblePartyInvestigatorFullName,
+  //   LeadSponsorName,
+  //   DesignAllocation,
+  //   DesignMasking,
+  //   NCTId,
+  // });
+
+  const aiFieldsQuery = api.interal.aiFields.useQuery(
+    {
+      text: JSON.stringify({
+        BriefTitle,
+        OfficialTitle,
+        DetailedDescription,
+        BriefSummary,
+        AgeCategories,
+        DesignInterventionModel,
+        DesignInterventionModelDescription,
+        conditions,
+      }),
+      entryId: e.id,
+    },
+    {
+      enabled: true,
+    }
+  );
+
+  // const aiFields = !!aiFieldsQuery.data ? null : aiFieldsQuery.data.data;
+
+  const aiFindPublications = api.interal.findPublication.useQuery(
+    {
+      text: JSON.stringify({
+        BriefTitle,
+        OfficialTitle,
+        DetailedDescription,
+        BriefSummary,
+        AgeCategories,
+        DesignInterventionModel,
+        DesignInterventionModelDescription,
+        conditions,
+        EnrollmentCount,
+        ResponsiblePartyInvestigatorFullName,
+        LeadSponsorName,
+        DesignAllocation,
+        DesignMasking,
+        NCTId,
+      }),
+      entryId: e.id,
+    },
+    {
+      enabled: false,
+    }
+  );
 
   const form = useForm({
     initialValues: {
@@ -112,6 +196,10 @@ export default function Entry(props: {
 
   useHotkeys(hotkeys);
 
+  function addRobot(text?: string) {
+    return `🤖 ${text}`;
+  }
+
   const InvestigatorLastName = (e.ResponsiblePartyInvestigatorFullName || "")
     .split(" ")
     .at(-1);
@@ -163,26 +251,38 @@ export default function Entry(props: {
           disabled
         ></TextInput>
 
-        <Autocomplete
-          {...form.getInputProps("drug_name")}
-          limit={10}
-          label="Drug name"
-          data={getUnique("drug_name")}
-        ></Autocomplete>
+        <div>
+          <Autocomplete
+            {...form.getInputProps("drug_name")}
+            limit={10}
+            label="Drug name"
+            data={getUnique("drug_name")}
+          ></Autocomplete>
+          <AIInfo text={aiFieldsQuery.data?.data.drug_name}></AIInfo>
+        </div>
       </FlexInputGroup>
 
       <FlexInputGroup>
-        <Autocomplete
-          {...form.getInputProps("usecase")}
-          label="Usecase"
-          data={getUnique("usecase")}
-        ></Autocomplete>
+        <div>
+          <Autocomplete
+            {...form.getInputProps("usecase")}
+            label="Usecase"
+            data={getUnique("usecase")}
+          ></Autocomplete>
+          <AIInfo text={aiFieldsQuery.data?.data.usecase}></AIInfo>
+        </div>
 
-        <Autocomplete
-          label="Drug role"
-          {...form.getInputProps("drug_role")}
-          data={getUnique("drug_role")}
-        />
+        <div>
+          <Autocomplete
+            label="Drug role"
+            {...form.getInputProps("drug_role")}
+            data={getUnique("drug_role")}
+          />
+          <AIInfo
+            text={aiFieldsQuery.data?.data.drug_role}
+            tooltip={aiFieldsQuery.data?.data.drug_role_explanation}
+          ></AIInfo>
+        </div>
       </FlexInputGroup>
 
       <FlexInputGroup>
@@ -220,7 +320,7 @@ export default function Entry(props: {
         <div>
           <p>There are reference citations available.</p>
           <ul>
-            {e.ReferenceCitation.map((c, i) => (
+            {e.ReferenceCitation.map((c: any, i: any) => (
               <li key={i}>
                 <a
                   target="_blank"
@@ -244,18 +344,88 @@ export default function Entry(props: {
         </div>
       )}
 
-      <Checkbox
-        checked={form.values.repurpose}
-        {...form.getInputProps("repurpose")}
-        label="repurpose?"
-        my="md"
-      ></Checkbox>
+      <div className="my-5 flex space-x-5">
+        <Checkbox
+          checked={form.values.repurpose}
+          {...form.getInputProps("repurpose")}
+          label="repurpose?"
+          my="md"
+        ></Checkbox>
+
+        <div>
+          {Boolean(aiFieldsQuery.data?.data.repurpose) == true ? (
+            <div>
+              <b>🤖 Repurposing likely</b>
+            </div>
+          ) : (
+            <div>🤖 Classic indication</div>
+          )}
+
+          <div className="text-sm opacity-60">
+            {aiFieldsQuery.data?.data.repurpose_reasoning}
+          </div>
+        </div>
+      </div>
 
       <Textarea
         label="Notes"
         {...form.getInputProps("notes")}
         className="resize-y"
       ></Textarea>
+
+      <div>
+        <h2>AI Publications</h2>
+        <Button
+          onClick={() => {
+            aiFindPublications.refetch().then((r: any) => {
+              console.log(r.data);
+            });
+          }}
+        >
+          Find publications
+        </Button>
+        {aiFindPublications.data && (
+          <div>
+            <div>Query</div>
+            <pre className="break-before-auto overflow-x-scroll text-xs">
+              {JSON.stringify(aiFindPublications.data.searchQuery, null, 3)}
+            </pre>
+          </div>
+        )}
+        <div>
+          {aiFindPublications.data &&
+            aiFindPublications.data.results.total > 0 &&
+            aiFindPublications.data.results.data.map((d) => {
+              return (
+                <div
+                  key={d.paperId}
+                  className="my-4 rounded-lg border border-gray-200 p-3 shadow"
+                >
+                  <h4>{d.title}</h4>
+                  <div className="mt-0 text-xs">
+                    {d.authors.map((a) => a.name).join(", ")}
+                  </div>
+
+                  <p>{d.tldr?.text}</p>
+
+                  <div className="space-x-2">
+                    <a href={d.url} target="_blank">
+                      Link
+                    </a>
+                    {d.externalIds?.PubMed && (
+                      <a
+                        href={`https://pubmed.ncbi.nlm.nih.gov/${d.externalIds.PubMed}`}
+                        target="_blank"
+                      >
+                        PubMed
+                      </a>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+        </div>
+      </div>
     </div>
   );
 }

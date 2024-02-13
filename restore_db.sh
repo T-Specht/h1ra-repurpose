@@ -10,7 +10,7 @@ sudo rm -rf data/postgres
 docker compose up db -d
 
 echo "waiting, so db is up"
-sleep 5s
+sleep 10
 
 echo "restoring from $BACKUP_FILE";
 

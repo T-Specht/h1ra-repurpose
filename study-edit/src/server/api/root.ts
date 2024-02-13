@@ -1,5 +1,5 @@
 import { createTRPCRouter } from "~/server/api/trpc";
-import { exampleRouter } from "~/server/api/routers/example";
+import { internalRouter } from "~/server/api/routers/internal";
 import { appRouter as generatedAppRouter } from "~/../prisma/generated/routers/index";
 
 /**
@@ -8,8 +8,8 @@ import { appRouter as generatedAppRouter } from "~/../prisma/generated/routers/i
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  example: exampleRouter,
-  generated: generatedAppRouter
+  interal: internalRouter,
+  generated: generatedAppRouter,
 });
 
 // export type definition of API
