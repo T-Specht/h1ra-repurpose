@@ -41,7 +41,7 @@
     "react-reflex": "^4.0.12",
     "react-resizable-panels": "^0.0.37",
     "superjson": "1.9.1",
-    "zod": "^3.20.6"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/eslint": "^8.21.1",

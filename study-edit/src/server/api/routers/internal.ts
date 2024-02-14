@@ -1,20 +1,19 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { findPublications, generateAIInformation } from "~/server/langchain";
+import {
+  findPublications,
+  findPublicationsAgent,
+  generateAIInformation,
+} from "~/server/langchain";
 
 enum AICacheTypes {
   AI_FIELDS = "ai_fields",
+  AI_PAPERS = "ai_papers",
 }
 
-export interface IAiFields {
-  drug_name: string;
-  repurpose: boolean;
-  repurpose_reasoning: string;
-  drug_role: string;
-  drug_role_explanation: string;
-  usecase: string;
-}
+export type IAiFields = Awaited<ReturnType<typeof generateAIInformation>>;
+export type IAiPapers = Awaited<ReturnType<typeof findPublicationsAgent>>;
 
 export const internalRouter = createTRPCRouter({
   hello: publicProcedure
@@ -37,34 +36,87 @@ export const internalRouter = createTRPCRouter({
         },
       });
 
-      let returnStr: string;
+      let returnObject: IAiFields;
 
       if (aiCache) {
-        console.log("using cache");
-        returnStr = aiCache.output;
+        //console.log("using cache for ai fields", input.entryId);
+        returnObject = JSON.parse(aiCache.output) as IAiFields;
       } else {
         let aiInfo = await generateAIInformation(input.text);
 
         await ctx.prisma.aICache.create({
           data: {
             input: input.text,
-            output: aiInfo,
+            output: JSON.stringify(aiInfo),
             type: AICacheTypes.AI_FIELDS,
             entryId: input.entryId,
           },
         });
 
-        returnStr = aiInfo;
+        returnObject = aiInfo;
       }
 
       return {
-        data: JSON.parse(returnStr) as IAiFields,
+        data: returnObject,
         cacheInfo: aiCache,
       };
     }),
+  // findPublication: publicProcedure
+  //   .input(z.object({ text: z.string(), entryId: z.number() }))
+  //   .query(({ input }) => {
+  //     return findPublications(input.text);
+  //   }),
   findPublication: publicProcedure
-    .input(z.object({ text: z.string(), entryId: z.number() }))
-    .query(({ input }) => {
-      return findPublications(input.text);
+    .input(
+      z.object({
+        text: z.string(),
+        entryId: z.number(),
+        cacheAfterDate: z.date().nullable(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const aiCache = await ctx.prisma.aICache.findFirst({
+        where: {
+          entryId: input.entryId,
+          type: AICacheTypes.AI_PAPERS,
+          createdAt: {
+            gte: input.cacheAfterDate || new Date(0),
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      let returnObject: IAiPapers;
+
+      if (aiCache || input.cacheAfterDate == null) {
+        if (aiCache) returnObject = JSON.parse(aiCache.output) as IAiPapers;
+        else returnObject = { result: [] };
+      } else {
+        let aiInfo = await findPublicationsAgent(input.text);
+        console.log(
+          "Trying to find paper via agent; Entry Id: ",
+          input.entryId
+        );
+
+        //console.log(aiInfo);
+
+        await ctx.prisma.aICache.create({
+          data: {
+            input: input.text,
+            output: JSON.stringify(aiInfo),
+            type: AICacheTypes.AI_PAPERS,
+            entryId: input.entryId,
+          },
+        });
+
+        returnObject = aiInfo;
+      }
+
+      return {
+        data: returnObject,
+        cacheInfo: aiCache,
+      };
     }),
 });

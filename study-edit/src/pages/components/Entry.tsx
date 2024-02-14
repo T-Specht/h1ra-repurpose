@@ -20,9 +20,10 @@ dayjs.extend(relativeTime);
 import { api, type RouterOutputs } from "~/utils/api";
 import FlexInputGroup from "./ui/FlexInputGroup";
 import { PublicationStatus } from "@prisma/client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IAiFields } from "~/server/api/routers/internal";
 import AIInfo from "./ui/AIInfo";
+import { searchPubMed } from "~/server/pubmed-api";
 
 type EntryType = RouterOutputs["generated"]["entry"]["findManyEntry"][0];
 
@@ -91,6 +92,10 @@ export default function Entry(props: {
 
   // const aiFields = !!aiFieldsQuery.data ? null : aiFieldsQuery.data.data;
 
+  const [cacheAfterDate, setCacheAfterDate] = useState<Date | null>(
+    new Date(0)
+  );
+
   const aiFindPublications = api.interal.findPublication.useQuery(
     {
       text: JSON.stringify({
@@ -99,20 +104,16 @@ export default function Entry(props: {
         DetailedDescription,
         BriefSummary,
         AgeCategories,
-        DesignInterventionModel,
-        DesignInterventionModelDescription,
         conditions,
         EnrollmentCount,
-        ResponsiblePartyInvestigatorFullName,
-        LeadSponsorName,
-        DesignAllocation,
-        DesignMasking,
         NCTId,
+        publications: e.ReferenceCitation,
       }),
       entryId: e.id,
+      cacheAfterDate,
     },
     {
-      enabled: false,
+      enabled: true,
     }
   );
 
@@ -184,7 +185,6 @@ export default function Entry(props: {
       });
     }
   };
-
   const hotkeys: HotkeyItem[] = [
     [
       "mod+S",
@@ -375,51 +375,56 @@ export default function Entry(props: {
 
       <div>
         <h2>AI Publications</h2>
-        <Button
-          onClick={() => {
-            aiFindPublications.refetch().then((r: any) => {
-              console.log(r.data);
-            });
-          }}
-        >
-          Find publications
-        </Button>
-        {aiFindPublications.data && (
-          <div>
-            <div>Query</div>
-            <pre className="break-before-auto overflow-x-scroll text-xs">
-              {JSON.stringify(aiFindPublications.data.searchQuery, null, 3)}
-            </pre>
+
+        <div className="flex space-x-5">
+          <Button
+            onClick={() => {
+              setCacheAfterDate(new Date());
+            }}
+            loading={
+              aiFindPublications.isFetching || aiFindPublications.isRefetching
+            }
+            loaderProps={{ type: "dots" }}
+          >
+            {aiFindPublications.data?.cacheInfo
+              ? "Update cache"
+              : "🤖 Search for publications"}
+          </Button>
+          {aiFindPublications.data?.cacheInfo && (
+            <div>
+              This is cached data from{" "}
+              {dayjs().to(aiFindPublications.data?.cacheInfo.createdAt)}
+            </div>
+          )}
+        </div>
+
+        {(aiFindPublications.data?.data?.result?.length == 0 ||
+          (aiFindPublications.data?.data as any)?.output) && (
+          <div className="mt-3">
+            ℹ️ The previous search (
+            {dayjs().to(aiFindPublications.data?.cacheInfo?.createdAt)}) did not
+            yield any results.
           </div>
         )}
+
         <div>
           {aiFindPublications.data &&
-            aiFindPublications.data.results.total > 0 &&
-            aiFindPublications.data.results.data.map((d) => {
+            aiFindPublications.data.data.result &&
+            aiFindPublications.data.data.result.map((d) => {
               return (
                 <div
-                  key={d.paperId}
+                  key={d.title}
                   className="my-4 rounded-lg border border-gray-200 p-3 shadow"
                 >
                   <h4>{d.title}</h4>
-                  <div className="mt-0 text-xs">
-                    {d.authors.map((a) => a.name).join(", ")}
-                  </div>
+                  <div className="mt-0 text-xs">{d.authors}</div>
 
-                  <p>{d.tldr?.text}</p>
+                  <div>Confidence: {d.confidence}%</div>
 
                   <div className="space-x-2">
                     <a href={d.url} target="_blank">
                       Link
                     </a>
-                    {d.externalIds?.PubMed && (
-                      <a
-                        href={`https://pubmed.ncbi.nlm.nih.gov/${d.externalIds.PubMed}`}
-                        target="_blank"
-                      >
-                        PubMed
-                      </a>
-                    )}
                   </div>
                 </div>
               );
