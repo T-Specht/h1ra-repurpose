@@ -4,7 +4,6 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   findPublications,
-  findPublicationsAgent,
   generateAIInformation,
 } from "~/server/langchain";
 import { SearxngAPIResponse } from "~/server/searxng_api";
@@ -15,7 +14,7 @@ enum AICacheTypes {
 }
 
 export type IAiFields = Awaited<ReturnType<typeof generateAIInformation>>;
-export type IAiPapers = Awaited<ReturnType<typeof findPublicationsAgent>>;
+export type IAiPapers = Awaited<ReturnType<typeof findPublications>>;
 
 export const internalRouter = createTRPCRouter({
   hello: publicProcedure

@@ -1,15 +1,18 @@
 import { Tooltip } from "@mantine/core";
 import React from "react";
+import { AIEnabled } from "../AiEnabled";
 
 const AIInfo: React.FunctionComponent<{ text?: string; tooltip?: string }> = (
   props
 ) => {
   return (
-    <div className="mb-3">
-      <Tooltip label={props.tooltip}>
-        <div className="text-sm opacity-75">🤖 {props.text}</div>
-      </Tooltip>
-    </div>
+    <AIEnabled>
+      <div className="mb-3">
+        <Tooltip label={props.tooltip}>
+          <div className="text-sm opacity-75">🤖 {props.text}</div>
+        </Tooltip>
+      </div>
+    </AIEnabled>
   );
 };
 

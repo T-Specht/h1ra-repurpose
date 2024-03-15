@@ -6,8 +6,7 @@ import {
   Select,
   Spoiler,
   Textarea,
-  TextInput,
-  Tooltip,
+  TextInput
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { type HotkeyItem, useHotkeys } from "@mantine/hooks";
@@ -20,10 +19,9 @@ dayjs.extend(relativeTime);
 import { api, type RouterOutputs } from "~/utils/api";
 import FlexInputGroup from "./ui/FlexInputGroup";
 import { PublicationStatus } from "@prisma/client";
-import { useEffect, useRef, useState } from "react";
-import { IAiFields } from "~/server/api/routers/internal";
+import { useState } from "react";
 import AIInfo from "./ui/AIInfo";
-import { searchPubMed } from "~/server/pubmed-api";
+import { AI_IS_ENABLED, AIEnabled } from "./AiEnabled";
 
 type EntryType = RouterOutputs["generated"]["entry"]["findManyEntry"][0];
 
@@ -86,25 +84,13 @@ export default function Entry(props: {
       entryId: e.id,
     },
     {
-      enabled: true,
+      enabled: AI_IS_ENABLED,
     }
   );
-
-  // const aiFields = !!aiFieldsQuery.data ? null : aiFieldsQuery.data.data;
 
   const [cacheAfterDate, setCacheAfterDate] = useState<Date | null>(
     new Date(0)
   );
-
-  // const searchQuery = api.interal.searchNgx.useQuery({
-  //   query: "Neuromyelitis Optica cetirizine add-on trial",
-  // });
-
-  // useEffect(() => {
-  //   if (searchQuery.data) {
-  //     console.log(searchQuery.data);
-  //   }
-  // }, [searchQuery.data]);
 
   const aiFindPublications = api.interal.findPublication.useQuery(
     {
@@ -123,15 +109,9 @@ export default function Entry(props: {
       cacheAfterDate,
     },
     {
-      enabled: true,
+      enabled: AI_IS_ENABLED,
     }
   );
-
-  useEffect(() => {
-    if (aiFindPublications.data) {
-      console.log(aiFindPublications.data);
-    }
-  }, [aiFindPublications.data]);
 
   const form = useForm({
     initialValues: {
@@ -211,10 +191,6 @@ export default function Entry(props: {
   ];
 
   useHotkeys(hotkeys);
-
-  function addRobot(text?: string) {
-    return `🤖 ${text}`;
-  }
 
   const InvestigatorLastName = (e.ResponsiblePartyInvestigatorFullName || "")
     .split(" ")
@@ -367,20 +343,21 @@ export default function Entry(props: {
           label="repurpose?"
           my="md"
         ></Checkbox>
+        <AIEnabled>
+          <div>
+            {Boolean(aiFieldsQuery.data?.data.repurpose) == true ? (
+              <div>
+                <b>🤖 Repurposing likely</b>
+              </div>
+            ) : (
+              <div>🤖 Classic indication</div>
+            )}
 
-        <div>
-          {Boolean(aiFieldsQuery.data?.data.repurpose) == true ? (
-            <div>
-              <b>🤖 Repurposing likely</b>
+            <div className="text-sm opacity-60">
+              {aiFieldsQuery.data?.data.repurpose_reasoning}
             </div>
-          ) : (
-            <div>🤖 Classic indication</div>
-          )}
-
-          <div className="text-sm opacity-60">
-            {aiFieldsQuery.data?.data.repurpose_reasoning}
           </div>
-        </div>
+        </AIEnabled>
       </div>
 
       <Textarea
@@ -389,67 +366,69 @@ export default function Entry(props: {
         className="resize-y"
       ></Textarea>
 
-      <div>
-        <h2>AI Publications</h2>
+      <AIEnabled>
+        <div>
+          <h2>AI Publications</h2>
 
-        <div className="flex space-x-5">
-          <Button
-            onClick={() => {
-              setCacheAfterDate(new Date());
-            }}
-            loading={
-              aiFindPublications.isFetching || aiFindPublications.isRefetching
-            }
-            loaderProps={{ type: "dots" }}
-          >
-            {aiFindPublications.data?.cacheInfo
-              ? "Update cache"
-              : "🤖 Search for publications"}
-          </Button>
-          {aiFindPublications.data?.cacheInfo && (
-            <div>
-              This is cached data from{" "}
-              {dayjs().to(aiFindPublications.data?.cacheInfo.createdAt)}
+          <div className="flex space-x-5">
+            <Button
+              onClick={() => {
+                setCacheAfterDate(new Date());
+              }}
+              loading={
+                aiFindPublications.isFetching || aiFindPublications.isRefetching
+              }
+              loaderProps={{ type: "dots" }}
+            >
+              {aiFindPublications.data?.cacheInfo
+                ? "Update cache"
+                : "🤖 Search for publications"}
+            </Button>
+            {aiFindPublications.data?.cacheInfo && (
+              <div>
+                This is cached data from{" "}
+                {dayjs().to(aiFindPublications.data?.cacheInfo.createdAt)}
+              </div>
+            )}
+          </div>
+
+          {(aiFindPublications.data?.data?.result?.length == 0 ||
+            (aiFindPublications.data?.data as any)?.output) && (
+            <div className="mt-3">
+              ℹ️ The previous search (
+              {dayjs().to(aiFindPublications.data?.cacheInfo?.createdAt)}) did
+              not yield any results.
             </div>
           )}
-        </div>
 
-        {(aiFindPublications.data?.data?.result?.length == 0 ||
-          (aiFindPublications.data?.data as any)?.output) && (
-          <div className="mt-3">
-            ℹ️ The previous search (
-            {dayjs().to(aiFindPublications.data?.cacheInfo?.createdAt)}) did not
-            yield any results.
+          <div>
+            {aiFindPublications.data &&
+              aiFindPublications.data.data.result &&
+              aiFindPublications.data.data.result.map((d) => {
+                return (
+                  <div
+                    key={d.title}
+                    className="my-4 rounded-lg border border-gray-200 p-3 shadow"
+                  >
+                    <h4 className="my-2">{d.title}</h4>
+                    <div className="my-1 ">
+                      <Badge>{d.source}</Badge>
+                      <Badge>{d.confidence}%</Badge>
+                    </div>
+
+                    <div className="mt-0 text-xs">{d.authors}</div>
+
+                    <div className="space-x-2">
+                      <a href={d.url} target="_blank">
+                        Link
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
           </div>
-        )}
-
-        <div>
-          {aiFindPublications.data &&
-            aiFindPublications.data.data.result &&
-            aiFindPublications.data.data.result.map((d) => {
-              return (
-                <div
-                  key={d.title}
-                  className="my-4 rounded-lg border border-gray-200 p-3 shadow"
-                >
-                  <h4 className="my-2">{d.title}</h4>
-                  <div className="my-1 ">
-                    <Badge>{d.source}</Badge>
-                    <Badge>{d.confidence}%</Badge>
-                  </div>
-
-                  <div className="mt-0 text-xs">{d.authors}</div>
-
-                  <div className="space-x-2">
-                    <a href={d.url} target="_blank">
-                      Link
-                    </a>
-                  </div>
-                </div>
-              );
-            })}
         </div>
-      </div>
+      </AIEnabled>
     </div>
   );
 }
