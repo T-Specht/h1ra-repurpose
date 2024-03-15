@@ -4,7 +4,10 @@ import { RunnableSequence } from "@langchain/core/runnables";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import axios from "axios";
 import { SemanticAPIResponse } from "./semantic_api";
-import { StructuredOutputParser } from "langchain/output_parsers";
+import {
+  JsonOutputFunctionsParser,
+  StructuredOutputParser,
+} from "langchain/output_parsers";
 import { z } from "zod";
 import {
   createOpenAIFunctionsAgent,
@@ -25,6 +28,8 @@ import {
   OpenAIFunctionsAgentOutputParser,
 } from "langchain/agents/openai/output_parser";
 
+import { SearxngSearch } from "@langchain/community/tools/searxng_search";
+
 import {
   type BaseMessage,
   AIMessage,
@@ -33,69 +38,160 @@ import {
   type AgentStep,
 } from "langchain/schema";
 import { searchPubMed } from "./pubmed-api";
+import { SearxngAPIResponse, searxng_api_search } from "./searxng_api";
+
+async function generateQueries(input: string) {
+  const model = new ChatOpenAI({
+    modelName: "gpt-3.5-turbo-0125",
+    temperature: 0.5,
+  });
+
+  const queryGenerationSchema = z.object({
+    queries: z.array(z.string()).describe("search queries"),
+  });
+
+  const prompt = ChatPromptTemplate.fromMessages([
+    [
+      "system",
+      "Given the input of data from a clinical study, generate 6 search queries that are highly likely to find the exact published paper if one should exist.",
+    ],
+    ["user", "{input}"],
+  ]);
+  // Binding "function_call" below makes the model always call the specified function.
+  // If you want to allow the model to call functions selectively, omit it.
+  const functionCallingModel = model.bind({
+    functions: [
+      {
+        name: "output_formatter",
+        description: "Should always be used to properly format output",
+        parameters: zodToJsonSchema(queryGenerationSchema),
+      },
+    ],
+    function_call: { name: "output_formatter" },
+  });
+
+  const outputParser = new JsonOutputFunctionsParser<
+    z.infer<typeof queryGenerationSchema>
+  >();
+
+  const chain = RunnableSequence.from([
+    prompt,
+    functionCallingModel,
+    outputParser,
+  ]).withRetry({
+    stopAfterAttempt: 3,
+  });
+
+  const { queries } = await chain.invoke({ input: input });
+  return queries;
+}
+
+async function extractPapers(input: string, references: string) {
+  const model = new ChatOpenAI({
+    modelName: "gpt-3.5-turbo-0125",
+    temperature: 0.5,
+  });
+
+  const schema = z.object({
+    result: z
+      .array(
+        z.object({
+          title: z.string().describe("title of the paper"),
+          authors: z.string().describe("authors of the paper"),
+          url: z.string().describe("link to the paper"),
+          year: z.string().describe("year the paper was published"),
+          source: z
+            .string()
+            .describe(
+              "the tool with which you found the source, e.g. pubmed or semantic_scholar"
+            ),
+          confidence: z
+            .number()
+            .min(0)
+            .max(100)
+            .describe("confidence that this paper matches the clinical study"),
+        })
+      )
+      .describe(
+        "array of papers that you found. If you found non that match, return an empty array"
+      ),
+  });
+
+  const prompt = ChatPromptTemplate.fromMessages([
+    [
+      "system",
+      "Given the input of data from a clinical study and potential references for a corresponding publication to the study, find the paper that matches the study data. If you cannot find a paper that matches the study data, return an empty array.",
+    ],
+    [
+      "user",
+      `### STUDY DATA ###
+    {input}
+
+
+    ### REFERENCES ###
+    {references}`,
+    ],
+  ]);
+  // Binding "function_call" below makes the model always call the specified function.
+  // If you want to allow the model to call functions selectively, omit it.
+  const functionCallingModel = model.bind({
+    functions: [
+      {
+        name: "output_formatter",
+        description: "Should always be used to properly format output",
+        parameters: zodToJsonSchema(schema),
+      },
+    ],
+    function_call: { name: "output_formatter" },
+  });
+
+  const outputParser = new JsonOutputFunctionsParser<z.infer<typeof schema>>();
+
+  const chain = RunnableSequence.from([
+    prompt,
+    functionCallingModel,
+    outputParser,
+  ]).withRetry({
+    stopAfterAttempt: 3,
+  });
+
+  const result = await chain.invoke({
+    input: input,
+    references: references,
+  });
+  return result;
+}
 
 export async function findPublications(input: string) {
-  const model = new ChatOpenAI({
-    modelName: "gpt-3.5-turbo-1106",
-    temperature: 0.75,
-  });
+  // Get search results
 
-  const promptTemplate = new PromptTemplate({
-    template: `Given the follwing JSON data in quotes for a clinical trial, construct a search query for a semantic scholar api search so that it includes all the information for finding a corresponding publication if it exists. To do this, extract the most relevant information and keywords. 
+  const queries = await generateQueries(input);
 
-        "{inputText}"
-
-      Output one main query and an array of other queries in JSON like this:
-
-      {{
-        "query": "main query that is quite specific and has the highes chance of success",
-        "options": ["array of other queries, max. 6", "another one"]
-      }}
-      
-      Use the following operators when combining keywords. Do NOT use the words AND, OR, NOT
-      
-      "+" for AND operation
-      "|" for OR operation
-      "-" negates a term
-      "*" can be used to match a prefix
-      
-      `,
-    inputVariables: ["inputText"],
-  });
-  const outputParser = new StringOutputParser();
-
-  const chain = RunnableSequence.from([promptTemplate, model, outputParser]);
-  // console.log('AI Test')
-  const resultQuery = JSON.parse(
-    await chain.invoke({
-      inputText: input,
+  const references = (
+    await Promise.all(
+      queries.map(async (query) => await searxng_api_search(query))
+    )
+  )
+    .flat()
+    .map((r) => {
+      const { content, url, title, authors, score, engine } = r;
+      return { content, url, title, authors, score, engine };
     })
-  ) as { query: string; options: string[] };
+    .filter((e, i, self) => {
+      const index = self.findIndex((t) => t.title === e.title);
+      return index === i;
+    });
 
-  let semanticResult: SemanticAPIResponse = (
-    await axios.get("https://api.semanticscholar.org/graph/v1/paper/search", {
-      headers: {
-        "x-api-key": process.env.SEMANTIC_API_KEY,
-      },
-      params: {
-        query: resultQuery.query,
-        fields:
-          "title,year,journal,abstract,authors.name,fieldsOfStudy,tldr,externalIds,openAccessPdf,url",
-        limit: 10,
-      },
-    })
-  ).data;
+  const matched = await extractPapers(input, JSON.stringify(references));
 
-  return {
-    searchQuery: resultQuery,
-    results: semanticResult,
-  };
+  return matched;
 }
 
 export async function findPublicationsAgent(input: string) {
   const llm = new ChatOpenAI({
-    modelName: "gpt-3.5-turbo-1106",
+    modelName: "gpt-3.5-turbo-0125",
     temperature: 1,
+    verbose: false,
   });
 
   const semanticSearchTool = new DynamicStructuredTool({
@@ -136,6 +232,27 @@ export async function findPublicationsAgent(input: string) {
       return await searchPubMed(query, 5);
     },
   });
+
+  const searchTool = new DynamicStructuredTool({
+    name: "search-tool",
+    description:
+      "allows you to search for papers with a specific topic. Return data will be JSON.",
+    schema: z.object({
+      query: z.string().describe("this is the search query"),
+    }),
+    func: async ({ query }) => {
+      return JSON.stringify(searxng_api_search(query));
+    },
+  });
+
+  // const searxngTool = new SearxngSearch({
+  //   apiBase: "http://searxng:8080/search",
+  //   params: {
+  //     format: "json", // Do not change this, format other than "json" is will throw error
+  //     numResults: 5,
+  //     categories: "science",
+  //   },
+  // });
 
   const responseSchema = z.object({
     result: z
@@ -220,20 +337,8 @@ export async function findPublicationsAgent(input: string) {
   const prompt = ChatPromptTemplate.fromMessages([
     [
       "system",
-      `Given the follwing JSON data for a clinical trial, conduct a search using the semantic scholar api and pubmed search tool to find if there is a published paper to this exact study. Please do not search for related papers but only for specific ones to the study data provided. 
-   
-        Use the pubmed tool. Use the semantic scholar tool. Use them both!
-
-   You need to be creative and RETRY different queries and keyword combinations until you found a matching publication.
-   The NCTid identifies a trial directly, so start by searching for it directly. However, it is possible that the published study does not reference the NCTid
-   Use the following operators when combining keywords for the search query. Do NOT use the words AND, OR, NOT
-   
-   "+" for AND operation
-   "|" for OR operation
-   "-" negates a term
-   "*" can be used to match a prefix
-
-   `,
+      `Using the search tool find if there is a published paper to this exact study. Do not search for related papers but only for specific ones to the study data provided. 
+      Try different queries and keyword combinations until you found a exactly matching publication.`,
     ],
     ["human", "{input}"],
     new MessagesPlaceholder("agent_scratchpad"),
@@ -241,8 +346,9 @@ export async function findPublicationsAgent(input: string) {
 
   const llmWithTools = llm.bind({
     functions: [
-      convertToOpenAIFunction(semanticSearchTool),
-      convertToOpenAIFunction(pubmedSearchTool),
+      // convertToOpenAIFunction(semanticSearchTool),
+      // convertToOpenAIFunction(pubmedSearchTool),
+      convertToOpenAIFunction(searchTool),
       responseOpenAIFunction,
     ],
   });
@@ -262,7 +368,10 @@ export async function findPublicationsAgent(input: string) {
 
   const executor = AgentExecutor.fromAgentAndTools({
     agent: runnableAgent,
-    tools: [semanticSearchTool, pubmedSearchTool],
+    tools: [
+      // semanticSearchTool, pubmedSearchTool,
+      searchTool,
+    ],
     maxIterations: 10,
   });
   /** Call invoke on the agent */
@@ -275,7 +384,7 @@ export async function findPublicationsAgent(input: string) {
 
 export async function generateAIInformation(input: string) {
   const model = new ChatOpenAI({
-    modelName: "gpt-3.5-turbo-1106",
+    modelName: "gpt-3.5-turbo-0125",
     temperature: 0.2,
     modelKwargs: {
       response_format: { type: "json_object" },

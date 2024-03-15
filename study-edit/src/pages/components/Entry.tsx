@@ -96,6 +96,16 @@ export default function Entry(props: {
     new Date(0)
   );
 
+  // const searchQuery = api.interal.searchNgx.useQuery({
+  //   query: "Neuromyelitis Optica cetirizine add-on trial",
+  // });
+
+  // useEffect(() => {
+  //   if (searchQuery.data) {
+  //     console.log(searchQuery.data);
+  //   }
+  // }, [searchQuery.data]);
+
   const aiFindPublications = api.interal.findPublication.useQuery(
     {
       text: JSON.stringify({
@@ -116,6 +126,12 @@ export default function Entry(props: {
       enabled: true,
     }
   );
+
+  useEffect(() => {
+    if (aiFindPublications.data) {
+      console.log(aiFindPublications.data);
+    }
+  }, [aiFindPublications.data]);
 
   const form = useForm({
     initialValues: {
@@ -416,10 +432,13 @@ export default function Entry(props: {
                   key={d.title}
                   className="my-4 rounded-lg border border-gray-200 p-3 shadow"
                 >
-                  <h4>{d.title}</h4>
-                  <div className="mt-0 text-xs">{d.authors}</div>
+                  <h4 className="my-2">{d.title}</h4>
+                  <div className="my-1 ">
+                    <Badge>{d.source}</Badge>
+                    <Badge>{d.confidence}%</Badge>
+                  </div>
 
-                  <div>Confidence: {d.confidence}%</div>
+                  <div className="mt-0 text-xs">{d.authors}</div>
 
                   <div className="space-x-2">
                     <a href={d.url} target="_blank">

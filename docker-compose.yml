@@ -44,6 +44,15 @@ services:
     #    - "10000:8888"
     volumes:
       - ./analysis:/home/jovyan/anaylsis/
+  searxng:
+    # ports:
+    #   - 8080:8080
+    volumes:
+      - ./searxng:/etc/searxng
+    environment:
+      #- BASE_URL=http://localhost:$PORT/
+      - INSTANCE_NAME=searxng-search
+    image: searxng/searxng
   caddy:
     image: caddy
     restart: unless-stopped

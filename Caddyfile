@@ -28,3 +28,7 @@ http://ctgproxy.{$SITE_ADDRESS} {
 	reverse_proxy http://ctgproxy:3000
 }
 
+http://searxng.{$SITE_ADDRESS} {
+	reverse_proxy http://searxng:8080
+}
+

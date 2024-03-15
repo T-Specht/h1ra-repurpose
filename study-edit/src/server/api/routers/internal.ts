@@ -1,3 +1,4 @@
+import axios from "axios";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
@@ -6,6 +7,7 @@ import {
   findPublicationsAgent,
   generateAIInformation,
 } from "~/server/langchain";
+import { SearxngAPIResponse } from "~/server/searxng_api";
 
 enum AICacheTypes {
   AI_FIELDS = "ai_fields",
@@ -22,6 +24,21 @@ export const internalRouter = createTRPCRouter({
       return {
         greeting: `Hello ${input.text}`,
       };
+    }),
+  searchNgx: publicProcedure
+    .input(z.object({ query: z.string() }))
+    .query(async ({ input }) => {
+      let results: SearxngAPIResponse = (
+        await axios.get("http://searxng:8080/search", {
+          params: {
+            q: input.query,
+            format: "json",
+            categories: "science",
+          },
+        })
+      ).data;
+
+      return JSON.stringify(results.results.slice(0, 5));
     }),
   aiFields: publicProcedure
     .input(z.object({ text: z.string(), entryId: z.number() }))
@@ -94,7 +111,7 @@ export const internalRouter = createTRPCRouter({
         if (aiCache) returnObject = JSON.parse(aiCache.output) as IAiPapers;
         else returnObject = { result: [] };
       } else {
-        let aiInfo = await findPublicationsAgent(input.text);
+        let aiInfo = await findPublications(input.text);
         console.log(
           "Trying to find paper via agent; Entry Id: ",
           input.entryId
