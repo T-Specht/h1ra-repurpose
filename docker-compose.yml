@@ -2,7 +2,7 @@ version: '3.3'
 services:
   db:
     image: postgres
-    restart: always
+    restart: unless-stopped
     ports:
       - "5433:5432"
     environment:
@@ -10,7 +10,7 @@ services:
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
   study-edit:
-    #command: yarn docker-start
+    command: yarn docker-start
     restart: unless-stopped
     tty: true
     build:
@@ -30,7 +30,7 @@ services:
       - db
   adminer:
     image: adminer
-    restart: always
+    restart: unless-stopped
     depends_on:
       - db
     # ports:
