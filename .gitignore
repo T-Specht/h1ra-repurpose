@@ -5,6 +5,8 @@ node_modules
 update_git.sh
 .vscode
 
+docker-compose.override.yml
+
 analysis/export/
 analysis/pvt/*.csv
 analysis/**/*.pdf

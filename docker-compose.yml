@@ -3,8 +3,6 @@ services:
   db:
     image: postgres
     restart: unless-stopped
-    ports:
-      - "5433:5432"
     environment:
       POSTGRES_PASSWORD: example
     volumes:
@@ -38,6 +36,7 @@ services:
   jupyter:
     image: jupyter/datascience-notebook
     command: "start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''"
+    #platform: "linux/amd64" # might be needed when running on a an apple silicon mac
     env_file:
       - .env
     # ports:
