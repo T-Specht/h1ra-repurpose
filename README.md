@@ -60,3 +60,9 @@ You may use the in-browser code editor provided for the processings scripts to o
 Please run the first few cells in order for the first time to ensure automatic installation of necessary software components.
 
 The Jupyter notebook automatically exports the data as .csv files to the `./analysis/pvt/` directory. This data can then be imported into other software solutions like GraphPad Prism for more advanced graphical anaylsis.
+
+
+#### Helpful resources
+
+- https://www.prisma.io/docs/orm/prisma-migrate/workflows/baselining
+- https://dev.to/docker/run-x86-containers-on-apple-mac-m1-with-rosetta-2-417a
