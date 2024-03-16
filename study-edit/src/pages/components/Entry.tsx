@@ -6,7 +6,7 @@ import {
   Select,
   Spoiler,
   Textarea,
-  TextInput
+  TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { type HotkeyItem, useHotkeys } from "@mantine/hooks";
@@ -31,6 +31,7 @@ export default function Entry(props: {
   jumpCallback: (point: string) => unknown;
 }) {
   const updateMutation = api.generated.entry.updateOneEntry.useMutation();
+  const deleteCachedAiFields = api.interal.deleteCachedAiFields.useMutation();
   const apiUntil = api.useContext();
 
   const e = props.entry;
@@ -51,23 +52,6 @@ export default function Entry(props: {
     DesignMasking,
     NCTId,
   } = e;
-
-  // console.log({
-  //   BriefTitle,
-  //   OfficialTitle,
-  //   DetailedDescription,
-  //   BriefSummary,
-  //   AgeCategories,
-  //   DesignInterventionModel,
-  //   DesignInterventionModelDescription,
-  //   conditions,
-  //   EnrollmentCount,
-  //   ResponsiblePartyInvestigatorFullName,
-  //   LeadSponsorName,
-  //   DesignAllocation,
-  //   DesignMasking,
-  //   NCTId,
-  // });
 
   const aiFieldsQuery = api.interal.aiFields.useQuery(
     {
@@ -307,6 +291,23 @@ export default function Entry(props: {
           </a>
         )}
       </FlexInputGroup>
+
+      <div>
+        <AIEnabled>
+          <Button
+            variant="outline"
+            className="mt-5"
+            loading={aiFieldsQuery.isFetching || aiFieldsQuery.isRefetching}
+            onClick={async () => {
+              await deleteCachedAiFields.mutateAsync({ entryId: e.id });
+              await aiFieldsQuery.refetch();
+            }}
+            disabled={aiFieldsQuery.isFetching || aiFieldsQuery.isRefetching}
+          >
+            Regenerate AI Fields
+          </Button>
+        </AIEnabled>
+      </div>
 
       {e.ReferenceCitation.length > 0 && (
         <div>

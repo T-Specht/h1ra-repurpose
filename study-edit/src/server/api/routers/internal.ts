@@ -2,10 +2,7 @@ import axios from "axios";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import {
-  findPublications,
-  generateAIInformation,
-} from "~/server/langchain";
+import { findPublications, generateAIInformation } from "~/server/langchain";
 import { SearxngAPIResponse } from "~/server/searxng_api";
 
 enum AICacheTypes {
@@ -38,6 +35,18 @@ export const internalRouter = createTRPCRouter({
       ).data;
 
       return JSON.stringify(results.results.slice(0, 5));
+    }),
+  deleteCachedAiFields: publicProcedure
+    .input(z.object({ entryId: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      await ctx.prisma.aICache.deleteMany({
+        where: {
+          entryId: input.entryId,
+          type: AICacheTypes.AI_FIELDS,
+        },
+      });
+
+      return "success";
     }),
   aiFields: publicProcedure
     .input(z.object({ text: z.string(), entryId: z.number() }))
