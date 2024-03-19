@@ -124,7 +124,7 @@ export const apiDownload = async (writeFile = true, fileName = './api_results.js
     console.log({ min_rank, max_rank, results_length: results.length });
 
 
-    resultsOverAllRanks.push(results);
+    resultsOverAllRanks.push(...results);
 
     if (max_rank >= MAX_RANK_LIMIT) break;
 
