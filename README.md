@@ -13,6 +13,9 @@ This version differs from the version used in the original paper (can still be a
 
 [[German Video] Basic installation and usage demonstration](https://youtu.be/_msVKMROs80)
 
+## Wiki
+
+For additional resources regarding usage, common errors etc. you can have a look at [the project wiki](https://github.com/T-Specht/h1ra-repurpose/wiki).
 
 ## Prerequisites
 
