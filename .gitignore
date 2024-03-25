@@ -5,6 +5,8 @@ node_modules
 update_git.sh
 .vscode
 
+docker-compose.override.yml
+
 analysis/export/
 analysis/pvt/*.csv
 analysis/**/*.pdf
@@ -20,6 +22,7 @@ processing/legacy_data.json
 
 study-edit/proxy_cached_content/html/
 study-edit/prisma/generated
+study-edit/prisma/migrations/
 
 db_backups
 legacy_data

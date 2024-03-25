@@ -2,7 +2,7 @@ version: '3.3'
 services:
   db:
     image: postgres
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: example
     volumes:
@@ -28,7 +28,7 @@ services:
       - db
   adminer:
     image: adminer
-    restart: always
+    restart: unless-stopped
     depends_on:
       - db
     # ports:
@@ -116,4 +116,3 @@ services:
       dockerfile: Dockerfile
 networks:
   web:
-    external: true
