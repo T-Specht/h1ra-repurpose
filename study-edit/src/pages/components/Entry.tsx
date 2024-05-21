@@ -236,7 +236,7 @@ export default function Entry(props: {
           <Button
             variant="light"
             onClick={() => {
-              props.jumpCallback("#moreinfo");
+              props.jumpCallback("#publications");
             }}
           >
             Jump to citations
