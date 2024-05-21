@@ -216,7 +216,7 @@ const InnerCompontent = ({
                 height="100%"
                 frameBorder="0"
                 //src={`/api/ctg/${current.NCTId}${jumpPoint}`}
-                src={`${props.xframeProtocol}://ctgproxy.${props.siteAddress}/ct2/show/${current.NCTId}${jumpPoint}`}
+                src={`${props.xframeProtocol}://ctgproxy.${props.siteAddress}/study/${current.NCTId}${jumpPoint}`}
                 //src={`https://clinicaltrials.gov/study/${current.NCTId}`}
                 className="h-full w-full border-0 "
               ></iframe>

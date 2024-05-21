@@ -27,7 +27,7 @@ app.use(
 app.use(
   "/",
   createProxyMiddleware({
-    target: "https://classic.clinicaltrials.gov/",
+    target: "https://clinicaltrials.gov/",
     changeOrigin: true,
     logLevel: 'debug'
   })
