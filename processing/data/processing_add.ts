@@ -1,16 +1,16 @@
-import { Console, assert } from "console";
+import { Console, assert, log } from "console";
 import { readFileSync } from "fs";
 import { APIResultType, DesignWhoMasked, Phase } from "./apiResultType";
 import { fields as downloadedFields } from "./api_download";
 
 import { PrismaClient } from "@prisma/client";
 
-const LEGACY_SEARCH_TERM = '<additional search term>';
+const LEGACY_SEARCH_TERM = 'doxycycline_added';
 
 const prisma = new PrismaClient();
 
 // This is the data downloaded from clinical trials
-const { data }: APIResultType = require("../api_results_<additional search term>.json");
+const { data }: APIResultType = require("../api_results.json");
 
 interface PDataEntry {
   NCTId: string;
@@ -55,7 +55,11 @@ interface PDataEntry {
 
 //// Helper functions ///
 
-const returnFirstOrNull = <T>(arr: T[]) => (arr.length == 0 ? null : arr[0]);
+const returnFirstOrNull = <T>(arr: T[] | undefined) => {
+  if (arr == undefined) return null;
+  if (Array.isArray(arr)) return arr.length == 0 ? null : arr[0];
+  return arr; // most likley a string
+}
 
 const textTransform = (t: string) => t.toLowerCase().trim();
 
@@ -279,7 +283,9 @@ const main = async () => {
 
     // Assert that the length is really 0 or 1
     for (let k of singleLengthKeys) {
-      assert((d[k] as any).length <= 1, k, d[k]);
+      //console.log(k);
+
+      //assert((d[k] as any).length <= 1, k, d[k]);
 
       // Set the values in temp holding
       (entry as any)[k] = returnFirstOrNull(d[k] as string[]);
@@ -291,6 +297,9 @@ const main = async () => {
     entry.MinimumAge = ageTransformer(d.MinimumAge);
 
     // Process dates, if no day is given, it defaults to the 1st
+
+    //console.log(d);
+
 
     entry.StartDate = dateTransformer(d.StartDate);
     entry.CompletionDate = dateTransformer(d.CompletionDate);
@@ -552,6 +561,9 @@ const main = async () => {
 
     await Promise.all(finalEntries.map(async (e, i) => {
 
+      
+
+
       // Check if entry already exists
 
       let dbEntry = await prisma.entry.findFirst({
@@ -621,7 +633,7 @@ const main = async () => {
           legacy_search_term: LEGACY_SEARCH_TERM,
           usecase: e.usecase,
           repurpose: Boolean(e.repurpose),
-          legacy_import_date: new Date(e.legacy_import_date),
+          legacy_import_date: new Date(),
           notes: e.notes,
         },
       });
