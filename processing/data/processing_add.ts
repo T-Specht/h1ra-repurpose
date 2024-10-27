@@ -5,12 +5,12 @@ import { fields as downloadedFields } from "./api_download";
 
 import { PrismaClient } from "@prisma/client";
 
-const LEGACY_SEARCH_TERM = 'doxycycline_added';
+const LEGACY_SEARCH_TERM = '<new search term>';
 
 const prisma = new PrismaClient();
 
 // This is the data downloaded from clinical trials
-const { data }: APIResultType = require("../api_results.json");
+const { data }: APIResultType = require("../api_results_<new search term>.json");
 
 interface PDataEntry {
   NCTId: string;
