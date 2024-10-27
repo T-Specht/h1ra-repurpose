@@ -1,6 +1,6 @@
 import axios from "axios";
 import { writeFileSync } from "fs";
-import _ from "lodash";
+import _, { upperFirst } from "lodash";
 import xml2json from '@hendt/xml2json';
 
 const base = "https://clinicaltrials.gov/api/legacy/study-fields";
@@ -83,11 +83,40 @@ export let fields = [
   "WhyStopped",
 ];
 
+const arrayKeys: string[] = [
+  "Condition",
+  "ConditionMeshTerm",
+  "CollaboratorName",
+  "CollaboratorClass",
+  "StdAge",
+  "Phase",
+  "DesignWhoMasked",
+  "LocationCity",
+  "LocationContactEMail",
+  "LocationContactName",
+  "LocationContactPhone",
+  "LocationContactPhoneExt",
+  "LocationContactRole",
+  "LocationCountry",
+  "LocationFacility",
+  "LocationState",
+  "LocationStatus",
+  "LocationZip",
+  "InterventionMeshTerm",
+  "InterventionDescription",
+  "InterventionBrowseLeafRelevance",
+  "InterventionBrowseLeafName",
+  "ConditionBrowseLeafName",
+  "ConditionAncestorTerm",
+  "OverallOfficialAffiliation",
+  "ReferenceCitation",
+];
+
 // Increase this number if there are more than 1000 results for the search expression
 const MAX_RANK_LIMIT = 1000;
 
 const params = {
-  expr: "<expr>",
+  expr: "NCT06179056,NCT06172686,NCT06120140,NCT06101420",
   //fmt: "json", // this is no longer supported in the legacy api
 };
 
@@ -132,7 +161,28 @@ export const apiDownload = async (writeFile = true, fileName = './api_results.js
       >
 
       let res = values.map(o => o.reduce<any>((obj, v) => {
-        obj[v.Field] = v.FieldValue
+
+        if (arrayKeys.includes(v.Field)) {
+
+          let valueIsArray = Array.isArray(v.FieldValue);
+
+          if (valueIsArray || v.FieldValue == null) {
+            if (v.FieldValue == null) {
+              obj[v.Field] = []
+            } else {
+              obj[v.Field] = v.FieldValue
+
+            }
+          } else {
+            obj[v.Field] = [v.FieldValue]
+          }
+
+
+        } else {
+
+          obj[v.Field] = v.FieldValue
+        }
+
         return obj;
       }, {}))
 
