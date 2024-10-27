@@ -116,7 +116,7 @@ const arrayKeys: string[] = [
 const MAX_RANK_LIMIT = 1000;
 
 const params = {
-  expr: "NCT06179056,NCT06172686,NCT06120140,NCT06101420",
+  expr: "<expr>",
   //fmt: "json", // this is no longer supported in the legacy api
 };
 
