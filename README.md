@@ -1,5 +1,7 @@
 ## Repurposing of H1-receptor antagonists (levo)cetirizine, (des)loratadine and fexofenadine as a case study for systematic analysis of trials on clinicaltrials.gov using semi-automated processes with custom-coded software
 
+> **_‼️ Important information ‼️:_**  The version of the clinicaltrials API used in this repository [is no longer available](https://clinicaltrials.gov/data-api/about-api/api-migration)! We implemented a new work-in-progress version of the download script to support the legacy API provided by clinicaltrials.gov. Currently, only the `data/processing_add.ts` script is able to process data downloaded via the legacy API.
+
 This repository includes the custom coded software corresponding to the paper with the title above. The software is split into three main components in individual directories (`./processing`, `./study-edit`, `./analysis`) which is explained in detail in the paper.
 
 ![Overview of sotfware components and composition](./overview.png)
