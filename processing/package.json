@@ -11,7 +11,8 @@
     "lodash": "^4.17.21",
     "plotly": "^1.0.6",
     "reflect-metadata": "^0.1.13",
-    "tslib": "^2.4.1"
+    "tslib": "^2.4.1",
+    "@hendt/xml2json": "^1.0.3",
   },
   "scripts": {
     "api": "ts-node api/index.ts",
