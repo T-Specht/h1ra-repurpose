@@ -1,8 +1,9 @@
 import axios from "axios";
 import { writeFileSync } from "fs";
 import _ from "lodash";
+import xml2json from '@hendt/xml2json';
 
-const base = "https://classic.clinicaltrials.gov/api/query/study_fields";
+const base = "https://clinicaltrials.gov/api/legacy/study-fields";
 
 // https://clinicaltrials.gov/api/info/study_fields_list?fmt=json
 
@@ -87,12 +88,14 @@ const MAX_RANK_LIMIT = 1000;
 
 const params = {
   expr: "<expr>",
-  fmt: "json",
+  //fmt: "json", // this is no longer supported in the legacy api
 };
 
 export const apiDownload = async (writeFile = true, fileName = './api_results.json') => {
   let chunks = _.chunk(fields, 19);
   console.log(`Downloading in ${chunks.length} chunks.`);
+
+
 
 
   let resultsOverAllRanks: any[] = [];
@@ -108,7 +111,7 @@ export const apiDownload = async (writeFile = true, fileName = './api_results.js
 
 
     for (let chunk of chunks) {
-      let res = await axios.get(base, {
+      let xml = await axios.get(base, {
         params: {
           ...params,
           min_rnk: min_rank,
@@ -117,7 +120,23 @@ export const apiDownload = async (writeFile = true, fileName = './api_results.js
         },
       });
 
-      results = _.merge(results, res.data.StudyFieldsResponse.StudyFields);
+      let json = xml2json(xml.data, {
+      })
+
+
+      let values = json.StudyFieldsResponse.StudyFieldsList.StudyFields.map((e: any) => e.FieldValues) as Array<
+        Array<{
+          Field: string
+          FieldValue: any
+        }>
+      >
+
+      let res = values.map(o => o.reduce<any>((obj, v) => {
+        obj[v.Field] = v.FieldValue
+        return obj;
+      }, {}))
+
+      results = _.merge(results, res);
 
     }
 
